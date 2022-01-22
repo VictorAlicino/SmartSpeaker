@@ -1,24 +1,24 @@
 //
-// Created by Victor Alicino on 19/01/22.
+// Created by victo on 22/01/2022.
 //
 
 #include "DigitalMic.h"
+#include "driver/i2s.h"
+#include "freertos/queue.h"
 
-DigitalMic::DigitalMic(int mck, int bck, int ws, int data_out, int data_in) {
+DigitalMic::DigitalMic() {
     i2s_config_t i2s_config = {
-            .mode = static_cast<i2s_mode_t>(I2S_MODE_MASTER | I2S_MODE_TX),
-            .sample_rate = 44100,
-            .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+            .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
+            .sample_rate = 40000,
+            .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
             .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
-            .communication_format = I2S_COMM_FORMAT_STAND_I2S,
-            .tx_desc_auto_clear = false,
-            .dma_desc_num = 8,
-            .dma_frame_num = 64,
+            .communication_format = I2S_COMM_FORMAT_I2S,
+            .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
+            .dma_buf_count = 4,
+            .dma_buf_len = 1024,
             .use_apll = false,
-            .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1  // Interrupt level 1, default 0
+            .tx_desc_auto_clear = false,
+            .fixed_mclk = 0
     };
 
-    i2s_driver_install(I2S_NUM, &i2s_config, 0, NULL);
-
-    i2s_driver_install(I2S_NUM, &i2s_config, 0, NULL);
 }
