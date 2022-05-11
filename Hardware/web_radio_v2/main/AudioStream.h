@@ -1,0 +1,19 @@
+//
+// Created by Victor Alicino on 11/05/22.
+//
+
+#ifndef WEB_RADIO_V2_AUDIOSTREAM_H
+#define WEB_RADIO_V2_AUDIOSTREAM_H
+
+#include "audio_element.h"
+
+class AudioStream {
+private:
+    audio_element_handle_t http_stream_reader, i2s_stream_writer, ogg_decoder;
+public:
+    AudioStream();
+
+};
+
+
+#endif //WEB_RADIO_V2_AUDIOSTREAM_H
