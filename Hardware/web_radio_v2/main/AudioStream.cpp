@@ -2,7 +2,7 @@
 // Created by Victor Alicino on 11/05/22.
 //
 
-#include "AudioStream.h"
+#include "AudioStream.hpp"
 #include "esp_log.h"
 #include "board.h"
 #include "http_stream.h"
@@ -33,4 +33,18 @@ AudioStream::AudioStream() {
     ogg_decoder_cfg_t ogg_cfg = DEFAULT_OGG_DECODER_CONFIG();
     this->ogg_decoder = ogg_decoder_init(&ogg_cfg);
     ESP_LOGI(__FILENAME__, "OGG decoder created");
+
+
+}
+
+audio_element_handle_t AudioStream::get_http_stream_reader() {
+    return this->http_stream_reader;
+}
+
+audio_element_handle_t AudioStream::get_i2s_stream_writer() {
+    return this->i2s_stream_writer;
+}
+
+audio_element_handle_t AudioStream::get_ogg_decoder(){
+    return this->ogg_decoder;
 }
