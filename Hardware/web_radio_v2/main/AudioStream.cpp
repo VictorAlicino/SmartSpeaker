@@ -45,6 +45,6 @@ audio_element_handle_t AudioStream::get_i2s_stream_writer() {
     return this->i2s_stream_writer;
 }
 
-audio_element_handle_t AudioStream::get_ogg_decoder(){
+audio_element_handle_t AudioStream::get_ogg_decoder() {
     return this->ogg_decoder;
 }

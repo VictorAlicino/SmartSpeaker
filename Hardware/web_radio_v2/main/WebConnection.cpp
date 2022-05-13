@@ -5,15 +5,17 @@
 #include "WebConnection.hpp"
 
 #include "periph_wifi.h"
+#include "esp_log.h"
 #include "esp_peripherals.h"
 
 WebConnection::WebConnection(): ssid(), password() {}
 
-void WebConnection::begin(std::string ssid, std::string password) {
+void WebConnection::begin(const std::string &ssid, const std::string &password) {
     this->ssid = ssid;
     this->password = password;
     esp_periph_config_t periph_cfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
     this->set = esp_periph_set_init(&periph_cfg);
+
 
     periph_wifi_cfg_t wifi_cfg = {
             .ssid = ssid.c_str(),

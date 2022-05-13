@@ -16,7 +16,7 @@ private:
 
 public:
     WebConnection();
-    void begin(std::string ssid, std::string password);
+    void begin(const std::string &ssid, const std::string &password);
     esp_periph_handle_t get_set();
 
 };

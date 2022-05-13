@@ -15,7 +15,11 @@
 #include "AudioStream.hpp"
 #include "WebConnection.hpp"
 
-extern "C" void app_main(void){
+extern "C"{
+    void app_main(void);
+}
+
+void app_main(void){
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
         // NVS partition was truncated and needs to be erased
@@ -30,10 +34,10 @@ extern "C" void app_main(void){
     tcpip_adapter_init();
 #endif
 
-    AudioStream Stream = AudioStream();
-    WebConnection WiFi = WebConnection();
-    AudioPipeline Pipeline = AudioPipeline();
-
+    AudioStream Stream;
+    WebConnection WiFi;
+    AudioPipeline Pipeline;
+/*
     Pipeline.register_to_pipeline(Stream.get_http_stream_reader(), "http");
     Pipeline.register_to_pipeline(Stream.get_ogg_decoder(), "ogg");
     Pipeline.register_to_pipeline(Stream.get_i2s_stream_writer(), "i2s");
@@ -46,5 +50,6 @@ extern "C" void app_main(void){
 
     Pipeline.setup_event(WiFi);
 
-    Pipeline.loop(Stream);
+    //Pipeline.loop(Stream);
+    */
 }

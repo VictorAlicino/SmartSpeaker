@@ -6,9 +6,12 @@
 
 
 #include "audio_pipeline.h"
+#include "esp_log.h"
 #include "audio_common.h"
 #include "audio_element.h"
 #include "esp_peripherals.h"
+#include <string>
+#include <vector>
 
 AudioPipeline::AudioPipeline() {
     ESP_LOGD(__FILENAME__, "Creating Audio Pipeline                               [AudioPipeline: 1/1]");
@@ -21,9 +24,9 @@ AudioPipeline::AudioPipeline() {
 
 esp_err_t AudioPipeline::register_to_pipeline(audio_element_handle_t audio_element_handle, std::string name) {
     esp_err_t out;
-    out = audio_pipeline_register(this->pipeline, audio_element_handle, name.c_str());
+    out = audio_pipeline_register(this->pipeline, audio_element_handle, name.c_str())Lógica;
     if (out == ESP_OK) {
-        this->link_tag.push_back(name.c_str());
+        this->link_tag.push_back(name);
         ESP_LOGD(__FILENAME__, "Element <<%s>> registered to Pipeline", name.c_str());
         return out;
     }
@@ -76,12 +79,14 @@ esp_err_t AudioPipeline::run() {
     return ESP_OK;
 }
 
-esp_err_t AudioPipeline::loop(AudioStream Stream) {
+//TODO Com certeza é necessário arrumar isso aqui pq não funciona nem deveria do jeito que ta
+esp_err_t AudioPipeline::loop(AudioStream &Stream) {
     while(this->activated){
+        /*
         audio_event_iface_msg_t msg;
         esp_err_t ret = audio_event_iface_listen(this->evt, &msg, portMAX_DELAY);
         if (ret != ESP_OK) {
-            ESP_LOGE(TAG, "[ * ] Event interface error : %d", ret);
+            ESP_LOGE(__FILENAME__, "[ * ] Event interface error : %d", this->ret);
             continue;
         }
 
@@ -91,7 +96,7 @@ esp_err_t AudioPipeline::loop(AudioStream Stream) {
             audio_element_info_t music_info = {0};
             audio_element_getinfo(Stream.get_ogg_decoder(), &music_info);
 
-            ESP_LOGI(TAG, "[ * ] Receive music info from ogg decoder, sample_rates=%d, bits=%d, ch=%d",
+            ESP_LOGI(__FILENAME__, "[ * ] Receive music info from ogg decoder, sample_rates=%d, bits=%d, ch=%d",
                      music_info.sample_rates, music_info.bits, music_info.channels);
 
             audio_element_setinfo(i2s_stream_writer, &music_info);
@@ -99,13 +104,14 @@ esp_err_t AudioPipeline::loop(AudioStream Stream) {
             continue;
         }
 
-        /* Stop when the last pipeline element (i2s_stream_writer in this case) receives stop event */
+        // Stop when the last pipeline element (i2s_stream_writer in this case) receives stop event
         if (msg.source_type == AUDIO_ELEMENT_TYPE_ELEMENT && msg.source == (void *) Stream.get_i2s_stream_writer()
             && msg.cmd == AEL_MSG_CMD_REPORT_STATUS
             && (((int)msg.data == AEL_STATUS_STATE_STOPPED) || ((int)msg.data == AEL_STATUS_STATE_FINISHED))) {
-            ESP_LOGW(TAG, "[ * ] Stop event received");
+            ESP_LOGW(__FILENAME__, "[ * ] Stop event received");
             break;
         }
+         */
     }
     return ESP_OK;
 }
