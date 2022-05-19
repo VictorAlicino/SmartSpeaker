@@ -20,14 +20,14 @@ private:
     bool activated;
     audio_pipeline_handle_t pipeline;
     std::vector<std::string>urls;
-    std::vector<std::string>link_tag;
+    std::vector<const char *>link_tag;
 
     //Event handlers
     audio_event_iface_handle_t evt;
 
 public:
     AudioPipeline();
-    esp_err_t register_to_pipeline(audio_element_handle_t audio_element_handle, std::string name);
+    esp_err_t register_to_pipeline(audio_element_handle_t audio_element_handle, const char* tag);
     esp_err_t link_to_pipeline();
     esp_err_t add_uri(std::string url);
     esp_err_t setup_event(WebConnection network);
@@ -35,6 +35,8 @@ public:
     esp_err_t loop(AudioStream &Stream);
     audio_event_iface_handle_t get_evt();
     esp_err_t stop();
+
+    //C
 };
 
 

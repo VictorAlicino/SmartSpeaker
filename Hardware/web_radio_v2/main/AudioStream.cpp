@@ -17,7 +17,7 @@ AudioStream::AudioStream() {
                          AUDIO_HAL_CTRL_START);
     ESP_LOGI(__FILENAME__, "Audio CODEC chip successfully started");
 
-    ESP_LOGD(__FILENAME__, "Creating HTTP Stream to READ data                     [AudioStream: 2/4]")
+    ESP_LOGD(__FILENAME__, "Creating HTTP Stream to READ data                     [AudioStream: 2/4]");
     http_stream_cfg_t http_cfg = HTTP_STREAM_CFG_DEFAULT();
     this->http_stream_reader = http_stream_init(&http_cfg);
     ESP_LOGI(__FILENAME__, "HTTP data input stream created");

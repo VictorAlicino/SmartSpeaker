@@ -7,6 +7,8 @@
 
 #include "audio_pipeline.h"
 #include "esp_log.h"
+#include "audio_error.h"
+#include "audio_mem.h"
 #include "audio_common.h"
 #include "audio_element.h"
 #include "esp_peripherals.h"
@@ -22,19 +24,26 @@ AudioPipeline::AudioPipeline() {
     this->activated = false;
 }
 
-esp_err_t AudioPipeline::register_to_pipeline(audio_element_handle_t audio_element_handle, std::string name) {
-    esp_err_t out;
-    out = audio_pipeline_register(this->pipeline, audio_element_handle, name.c_str())Lógica;
-    if (out == ESP_OK) {
-        this->link_tag.push_back(name);
-        ESP_LOGD(__FILENAME__, "Element <<%s>> registered to Pipeline", name.c_str());
-        return out;
+esp_err_t AudioPipeline::register_to_pipeline(audio_element_handle_t audio_element_handle, const char* tag) {
+    // Cloned from audio_pipeline.c and adapted to C++
+    esp_err_t er = ESP_OK;
+    audio_pipeline_unregister(this->pipeline, audio_element_handle);
+    if(tag){
+        audio_element_set_tag(audio_element_handle, tag);
     }
-    throw ESP_FAIL;
+    audio_element_item_t* el_item = audio_calloc(1, sizeof(audio_element_item_t));
+
+    AUDIO_MEM_CHECK(__FILENAME__, el_item, return ESP_ERR_NO_MEM);
+    el_item->el = el;
+    el_item->linked = false;
+    STAILQ_INSERT_TAIL(&this->pipeline.el_list, el_item, next);
+    ESP_LOGD(__FILENAME__, "Element <<%s>> registered to Pipeline", tag);
+    return er;
 }
 
 esp_err_t AudioPipeline::link_to_pipeline() {
     esp_err_t out;
+    link_tag.data().
     out = audio_pipeline_link(this->pipeline, this->link_tag.data(), this->link_tag.size());
     if (out == ESP_OK) {
         ESP_LOGD(__FILENAME__, "Elements linked to pipeline");
@@ -66,11 +75,12 @@ esp_err_t AudioPipeline::setup_event(WebConnection network) {
     audio_pipeline_set_listener(this->pipeline, this->evt);
     ESP_LOGI(__FILENAME__, "Listening event from all elements of pipeline  [X]");
 
-    ESP_LOGD(__FILENAME__, "Listening event from peripherals                        [Setup EventS: 3/4]");
+    ESP_LOGD(__FILENAME__, "Listening event from peripherals                       [Setup Events: 3/4]");
     audio_event_iface_set_listener(
             esp_periph_set_get_event_iface(network.get_set()),
             this->evt);
     ESP_LOGI(__FILENAME__, "Listening event from peripherals               [X]");
+    return ESP_OK;
 }
 
 esp_err_t AudioPipeline::run() {
@@ -131,4 +141,5 @@ esp_err_t AudioPipeline::stop() {
         audio_pipeline_unregister(this->pipeline, )
     }
      */
+    return ESP_OK;
 }

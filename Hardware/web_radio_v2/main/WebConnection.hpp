@@ -12,12 +12,12 @@ class WebConnection {
 private:
     std::string ssid;
     std::string password;
-    esp_periph_handle_t set;
+    esp_periph_set_handle_t set;
 
 public:
     WebConnection();
-    void begin(const std::string &ssid, const std::string &password);
-    esp_periph_handle_t get_set();
+    void begin(const char* ssid, const char* password);
+    esp_periph_set_handle_t get_set();
 
 };
 
