@@ -8,7 +8,7 @@
 #include "audio_element.h"
 
 class AudioStream {
-private:
+protected:
     audio_element_handle_t http_stream_reader, i2s_stream_writer, ogg_decoder;
 public:
     AudioStream();

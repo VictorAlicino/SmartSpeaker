@@ -28,11 +28,11 @@ AudioPipeline::AudioPipeline() {
 
 esp_err_t AudioPipeline::register_to_pipeline(audio_element_handle_t audio_element_handle, std::string tag) {
     // Cloned from audio_pipeline.c and adapted to C++
-    esp_err_t er = ESP_OK;
+    //esp_err_t er = ESP_OK;
     audio_pipeline_register(this->pipeline, audio_element_handle, tag.c_str());
     this->link_tag.push_back(tag);
     ESP_LOGD(__FILENAME__, "Element <<%s>> registered to Pipeline", tag.c_str());
-    return er;
+    return ESP_OK;
 }
 
 esp_err_t AudioPipeline::link_to_pipeline() {
@@ -46,21 +46,7 @@ esp_err_t AudioPipeline::link_to_pipeline() {
         ESP_LOGD(__FILENAME__, "Elements linked to pipeline");
         return out;
     }
-    throw ESP_FAIL;
-}
-
-esp_err_t AudioPipeline::add_uri(std::string url, AudioStream &Stream) {
-    this->urls.push_back(url);
-    this->url_available = true;
-    ESP_LOGI(__FILENAME__, "\nAdded URI:\n%s\nTotal URIs registered:%d", url.c_str(), this->urls.size());
-    ESP_LOGD(__FILENAME__, "The follow URL are available:");
-    if(esp_log_level_get(__FILENAME__) == ESP_LOG_DEBUG){
-        for(int i=0; i < urls.size(); i++) {
-            printf("%s\n", urls.at(i).c_str());
-        }
-    }
-    audio_element_set_uri(Stream.get_http_stream_reader(), urls.at(0).c_str());
-    return ESP_OK;
+    return ESP_FAIL;
 }
 
 esp_err_t AudioPipeline::setup_event(WebConnection network) {
@@ -88,44 +74,6 @@ esp_err_t AudioPipeline::setup_event(WebConnection network) {
 esp_err_t AudioPipeline::run() {
     audio_pipeline_run(this->pipeline);
     this->activated = true;
-    return ESP_OK;
-}
-
-esp_err_t AudioPipeline::loop(AudioStream &Stream) {
-    while(this->activated){
-        audio_event_iface_msg_t msg;
-        esp_err_t ret = audio_event_iface_listen(this->evt, &msg, portMAX_DELAY);
-        if (ret != ESP_OK) {
-            ESP_LOGE(__FILENAME__, "[ * ] Event interface error : %d", ret);
-            continue;
-        }
-
-        if (msg.source_type == AUDIO_ELEMENT_TYPE_ELEMENT
-            && msg.source == (void *) Stream.get_ogg_decoder()
-            && msg.cmd == AEL_MSG_CMD_REPORT_MUSIC_INFO) {
-                audio_element_info_t music_info = {
-                        0
-                };
-                audio_element_getinfo(Stream.get_ogg_decoder(), &music_info);
-
-                ESP_LOGI(__FILENAME__, "[ * ] Receive music info from ogg decoder, sample_rates=%d, bits=%d, ch=%d",
-                     music_info.sample_rates, music_info.bits, music_info.channels);
-
-                audio_element_setinfo(Stream.get_i2s_stream_writer(), &music_info);
-                i2s_stream_set_clk(Stream.get_i2s_stream_writer(), music_info.sample_rates,
-                                   music_info.bits, music_info.channels);
-                continue;
-        }
-
-        // Stop when the last pipeline element (i2s_stream_writer in this case) receives stop event
-        if (msg.source_type == AUDIO_ELEMENT_TYPE_ELEMENT && msg.source == (void *) Stream.get_i2s_stream_writer()
-            && msg.cmd == AEL_MSG_CMD_REPORT_STATUS
-            && (((int)msg.data == AEL_STATUS_STATE_STOPPED) || ((int)msg.data == AEL_STATUS_STATE_FINISHED))) {
-            ESP_LOGW(__FILENAME__, "[ * ] Stop event received");
-            break;
-        }
-
-    }
     return ESP_OK;
 }
 

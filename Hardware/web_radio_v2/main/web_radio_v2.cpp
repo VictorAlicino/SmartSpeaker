@@ -11,11 +11,10 @@
     #include "tcpip_adapter.h"
 #endif
 
-#include "audio_pipeline.h"
+#include "Data/WebRadio.hpp"
+#include "Data/WebConnection.hpp"
 
-#include "AudioPipeline.hpp"
-#include "AudioStream.hpp"
-#include "WebConnection.hpp"
+#include "esp_log.h"
 
 extern "C"{
     void app_main(void);
@@ -36,24 +35,22 @@ void app_main(void){
     tcpip_adapter_init();
 #endif
 
-    AudioStream Stream;
+    WebRadio Radio;
     WebConnection WiFi;
-    AudioPipeline Pipeline;
 
-    Pipeline.register_to_pipeline(Stream.get_http_stream_reader(), "http");
-    Pipeline.register_to_pipeline(Stream.get_ogg_decoder(), "ogg");
-    Pipeline.register_to_pipeline(Stream.get_i2s_stream_writer(), "i2s");
+    Radio.register_to_pipeline(Radio.get_http_stream_reader(), "http");
+    Radio.register_to_pipeline(Radio.get_ogg_decoder(), "ogg");
+    Radio.register_to_pipeline(Radio.get_i2s_stream_writer(), "i2s");
 
-    Pipeline.link_to_pipeline();
+    Radio.link_to_pipeline();
 
-    Pipeline.add_uri("http://alicinotestserver:8000/labiot-radio.ogg", Stream);
+    Radio.add_uri("http://alicinotestserver:8000/labiot-radio.ogg");
 
     WiFi.begin("LabIoT", "labiot2020.");
 
-    Pipeline.setup_event(WiFi);
+    Radio.setup_event(WiFi);
 
-    Pipeline.run();
+    Radio.run();
 
-    Pipeline.loop(Stream);
-
+    Radio.loop();
 }
