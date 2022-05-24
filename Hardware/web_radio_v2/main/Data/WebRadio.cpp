@@ -3,12 +3,11 @@
 //
 
 #include "WebRadio.hpp"
+
 #include "esp_log.h"
 #include "audio_element.h"
 #include "audio_event_iface.h"
 #include "i2s_stream.h"
-
-
 #include "esp_peripherals.h"
 #include "periph_touch.h"
 #include "periph_adc_button.h"
@@ -16,29 +15,40 @@
 #include "board.h"
 
 esp_err_t WebRadio::add_uri(std::string url) {
+    //TODO Adicionar funcionalidade para múltiplas URI
     this->urls.push_back(url);
     this->url_available = true;
-    ESP_LOGI(__FILENAME__, "\nAdded URI:\n%s\nTotal URIs registered:%d", url.c_str(), this->urls.size());
-    ESP_LOGD(__FILENAME__, "The follow URL are available:");
+    if(esp_log_level_get(__FILENAME__) == ESP_LOG_INFO){
+        printf("\n");
+    }
+    ESP_LOGI(__FILENAME__, "Added URI: %s\n"
+                           "                      Total URIs registered:%d\n", url.c_str(), this->urls.size());
+
     if(esp_log_level_get(__FILENAME__) == ESP_LOG_DEBUG){
+        printf("                      The follow URL are available:\n");
         for(int i=0; i < this->urls.size(); i++) {
-            printf("%s\n", urls.at(i).c_str());
+            printf("                      %s\n", urls.at(i).c_str());
         }
+        printf("\n");
     }
     audio_element_set_uri(get_http_stream_reader(), urls.at(0).c_str());
     return ESP_OK;
 }
 
 esp_err_t WebRadio::loop() {
-    audio_board_handle_t board_handle = audio_board_init();
-    audio_hal_ctrl_codec(board_handle->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
-
     int player_volume;
-    audio_hal_get_volume(board_handle->audio_hal, &player_volume);
-    ESP_LOGD(__FILENAME__, "AUDIO HAL GET VOLUME = %d", player_volume);
+    audio_hal_get_volume(this->board_handle->audio_hal, &player_volume);
+
+    ESP_LOGI(__FILENAME__, "[ 3 ] Initialize peripherals");
+    esp_periph_config_t periph_cfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
+    esp_periph_set_handle_t set = esp_periph_set_init(&periph_cfg);
+
+    audio_event_iface_set_listener(esp_periph_set_get_event_iface(set), this->evt);
+
+    ESP_LOGI(__FILENAME__, "[3.1] Initialize keys on board");
+    audio_board_key_init(set);
 
     while(this->activated){
-        ESP_LOGI(__FILENAME__, "Volume at = %d", player_volume);
         audio_event_iface_msg_t msg;
         esp_err_t ret = audio_event_iface_listen(this->evt, &msg, portMAX_DELAY);
         if (ret != ESP_OK) {
@@ -63,26 +73,6 @@ esp_err_t WebRadio::loop() {
             continue;
         }
 
-        if(gpio_get_level(GPIO_NUM_13) == 1) {
-            ESP_LOGI(__FILENAME__, "[ * ] [Vol-] touch tap event");
-            player_volume -= 10;
-            if (player_volume < 0) {
-                player_volume = 0;
-                audio_hal_set_volume(board_handle->audio_hal, player_volume);
-                ESP_LOGI(__FILENAME__, "[ * ] Volume set to %d %%", player_volume);
-            }
-        }
-
-        if(gpio_get_level(GPIO_NUM_27) == 1){
-            ESP_LOGI(__FILENAME__, "[ * ] [Vol+] touch tap event");
-            player_volume += 10;
-            if (player_volume > 100) {
-                player_volume = 100;
-            }
-            audio_hal_set_volume(board_handle->audio_hal, player_volume);
-            ESP_LOGI(__FILENAME__, "[ * ] Volume set to %d %%", player_volume);
-        }
-
         // Stop when the last pipeline element (i2s_stream_writer in this case) receives stop event
         if (msg.source_type == AUDIO_ELEMENT_TYPE_ELEMENT && msg.source == (void *) get_i2s_stream_writer()
             && msg.cmd == AEL_MSG_CMD_REPORT_STATUS
@@ -90,8 +80,36 @@ esp_err_t WebRadio::loop() {
             ESP_LOGW(__FILENAME__, "[ * ] Stop event received");
             break;
         }
-/*
-        if ((int) msg.data == get_input_set_id()) {
+
+        if ((msg.source_type == PERIPH_ID_TOUCH || msg.source_type == PERIPH_ID_BUTTON || msg.source_type == PERIPH_ID_ADC_BTN)
+            && (msg.cmd == PERIPH_TOUCH_TAP || msg.cmd == PERIPH_BUTTON_PRESSED || msg.cmd == PERIPH_ADC_BUTTON_PRESSED)) {
+            if ((int) msg.data == get_input_play_id()) {
+                ESP_LOGI(__FILENAME__, "[ * ] [Play] touch tap event");
+                audio_element_state_t el_state = audio_element_get_state(get_i2s_stream_writer());
+                switch (el_state) {
+                    case AEL_STATE_INIT :
+                        ESP_LOGI(__FILENAME__, "[ * ] Starting audio pipeline");
+                        audio_pipeline_run(pipeline);
+                        break;
+                    case AEL_STATE_RUNNING :
+                        ESP_LOGI(__FILENAME__, "[ * ] Pausing audio pipeline");
+                        audio_pipeline_pause(pipeline);
+                        break;
+                    case AEL_STATE_PAUSED :
+                        ESP_LOGI(__FILENAME__, "[ * ] Resuming audio pipeline");
+                        audio_pipeline_resume(pipeline);
+                        break;
+                    case AEL_STATE_FINISHED :
+                        ESP_LOGI(__FILENAME__, "[ * ] Rewinding audio pipeline");
+                        audio_pipeline_reset_ringbuffer(pipeline);
+                        audio_pipeline_reset_elements(pipeline);
+                        audio_pipeline_change_state(pipeline, AEL_STATE_INIT);
+                        audio_pipeline_run(pipeline);
+                        break;
+                    default :
+                        ESP_LOGI(__FILENAME__, "[ * ] Not supported state %d", el_state);
+                }
+            } else if ((int) msg.data == get_input_set_id()) {
                 ESP_LOGI(__FILENAME__, "[ * ] [Set] touch tap event");
                 ESP_LOGI(__FILENAME__, "[ * ] Stopping audio pipeline");
                 break;
@@ -109,18 +127,18 @@ esp_err_t WebRadio::loop() {
                 if (player_volume > 100) {
                     player_volume = 100;
                 }
-                audio_hal_set_volume(board_handle->audio_hal, player_volume);
+                audio_hal_set_volume(this->board_handle->audio_hal, player_volume);
                 ESP_LOGI(__FILENAME__, "[ * ] Volume set to %d %%", player_volume);
             } else if ((int) msg.data == get_input_voldown_id()) {
                 ESP_LOGI(__FILENAME__, "[ * ] [Vol-] touch tap event");
                 player_volume -= 10;
                 if (player_volume < 0) {
                     player_volume = 0;
-                audio_hal_set_volume(board_handle->audio_hal, player_volume);
+                }
+                audio_hal_set_volume(this->board_handle->audio_hal, player_volume);
                 ESP_LOGI(__FILENAME__, "[ * ] Volume set to %d %%", player_volume);
             }
-        }*/
-
+        }
     }
     return ESP_OK;
 }

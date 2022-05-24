@@ -11,7 +11,7 @@
 
 AudioStream::AudioStream() {
     ESP_LOGD(__FILENAME__, "Starting audio CODEC chip                             [AudioStream: 1/4]");
-    audio_board_handle_t board_handle = audio_board_init();
+    this->board_handle = audio_board_init();
     audio_hal_ctrl_codec(board_handle->audio_hal,
                          AUDIO_HAL_CODEC_MODE_DECODE,
                          AUDIO_HAL_CTRL_START);

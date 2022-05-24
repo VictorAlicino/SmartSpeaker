@@ -18,7 +18,7 @@
 #include "audio_event_iface.h"
 
 AudioPipeline::AudioPipeline() {
-    ESP_LOGD(__FILENAME__, "Creating Audio Pipeline                               [AudioPipeline: 1/1]");
+    ESP_LOGD(__FILENAME__, "Creating Audio Pipeline");
     audio_pipeline_cfg_t pipeline_cfg = DEFAULT_AUDIO_PIPELINE_CONFIG();
     this->pipeline = audio_pipeline_init(&pipeline_cfg);
     mem_assert(this->pipeline);
@@ -27,7 +27,6 @@ AudioPipeline::AudioPipeline() {
 }
 
 esp_err_t AudioPipeline::register_to_pipeline(audio_element_handle_t audio_element_handle, std::string tag) {
-    // Cloned from audio_pipeline.c and adapted to C++
     //esp_err_t er = ESP_OK;
     audio_pipeline_register(this->pipeline, audio_element_handle, tag.c_str());
     this->link_tag.push_back(tag);
@@ -50,22 +49,22 @@ esp_err_t AudioPipeline::link_to_pipeline() {
 }
 
 esp_err_t AudioPipeline::setup_event(WebConnection network) {
-    ESP_LOGD(__FILENAME__, "Setup event listener                                   [Setup Events: 1/4]");
+    ESP_LOGD(__FILENAME__, "Setup event listener");
     audio_event_iface_cfg_t evt_cfg = AUDIO_EVENT_IFACE_DEFAULT_CFG();
     this->evt = audio_event_iface_init(&evt_cfg);
-    ESP_LOGI(__FILENAME__, "Event listener created                         [X]");
+    ESP_LOGI(__FILENAME__, "Event listener created");
 
 
-    ESP_LOGD(__FILENAME__, "Listening event from all elements of pipeline          [Setup Events: 2/4]");
+    ESP_LOGD(__FILENAME__, "Listening event from all elements of pipeline");
     audio_pipeline_set_listener(this->pipeline, this->evt);
-    ESP_LOGI(__FILENAME__, "Listening event from all elements of pipeline  [X]");
+    ESP_LOGI(__FILENAME__, "Listening event from all elements of pipeline");
 
 
-    ESP_LOGD(__FILENAME__, "Listening event from peripherals                       [Setup Events: 3/4]");
+    ESP_LOGD(__FILENAME__, "Listening event from peripherals");
     audio_event_iface_set_listener(
             esp_periph_set_get_event_iface(network.get_set()),
             this->evt);
-    ESP_LOGI(__FILENAME__, "Listening event from peripherals               [X]");
+    ESP_LOGI(__FILENAME__, "Listening event from peripherals");
 
 
     return ESP_OK;

@@ -21,6 +21,8 @@ extern "C"{
 }
 
 void app_main(void){
+    esp_log_level_set("WebRadio.cpp", ESP_LOG_DEBUG);
+    esp_log_level_set("*", ESP_LOG_VERBOSE);
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
         // NVS partition was truncated and needs to be erased
