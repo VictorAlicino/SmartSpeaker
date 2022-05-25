@@ -13,6 +13,10 @@
 #include "periph_adc_button.h"
 #include "periph_button.h"
 #include "board.h"
+#include "MQTT.hpp"
+
+extern int volume;
+extern int board_state;
 
 esp_err_t WebRadio::add_uri(std::string url) {
     //TODO Adicionar funcionalidade para múltiplas URI
@@ -37,7 +41,9 @@ esp_err_t WebRadio::add_uri(std::string url) {
 
 esp_err_t WebRadio::loop() {
     int player_volume;
+    int old_player_volume;
     audio_hal_get_volume(this->board_handle->audio_hal, &player_volume);
+    audio_hal_get_volume(this->board_handle->audio_hal, &volume);
 
     ESP_LOGI(__FILENAME__, "[ 3 ] Initialize peripherals");
     esp_periph_config_t periph_cfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
@@ -49,6 +55,30 @@ esp_err_t WebRadio::loop() {
     audio_board_key_init(set);
 
     while(this->activated){
+        audio_element_state_t el_state = audio_element_get_state(get_i2s_stream_writer());
+        if(board_state != el_state){
+            switch (board_state) {
+                case PLAY:
+                    ESP_LOGI(__FILENAME__, "[ * ] Pausing audio pipeline");
+                    audio_pipeline_pause(pipeline);
+                    break;
+                case PAUSED :
+                    ESP_LOGI(__FILENAME__, "[ * ] Resuming audio pipeline");
+                    audio_pipeline_resume(pipeline);
+                    break;
+                case STOPPED :
+                    audio_pipeline_stop(pipeline);
+                    audio_pipeline_wait_for_stop(pipeline);
+                    audio_pipeline_terminate(pipeline);
+                    audio_pipeline_reset_ringbuffer(pipeline);
+                    break;
+                default :
+                    ESP_LOGI(__FILENAME__, "[ * ] Not supported state %d", el_state);
+            }
+        }
+        if(volume != old_player_volume){
+            audio_hal_set_volume(this->board_handle->audio_hal, volume);
+        }
         audio_event_iface_msg_t msg;
         esp_err_t ret = audio_event_iface_listen(this->evt, &msg, portMAX_DELAY);
         if (ret != ESP_OK) {
@@ -85,7 +115,6 @@ esp_err_t WebRadio::loop() {
             && (msg.cmd == PERIPH_TOUCH_TAP || msg.cmd == PERIPH_BUTTON_PRESSED || msg.cmd == PERIPH_ADC_BUTTON_PRESSED)) {
             if ((int) msg.data == get_input_play_id()) {
                 ESP_LOGI(__FILENAME__, "[ * ] [Play] touch tap event");
-                audio_element_state_t el_state = audio_element_get_state(get_i2s_stream_writer());
                 switch (el_state) {
                     case AEL_STATE_INIT :
                         ESP_LOGI(__FILENAME__, "[ * ] Starting audio pipeline");
@@ -139,6 +168,7 @@ esp_err_t WebRadio::loop() {
                 ESP_LOGI(__FILENAME__, "[ * ] Volume set to %d %%", player_volume);
             }
         }
+        audio_hal_get_volume(this->board_handle->audio_hal, &old_player_volume);
     }
     return ESP_OK;
 }

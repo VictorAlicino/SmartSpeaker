@@ -13,8 +13,12 @@
 
 #include "Data/WebRadio.hpp"
 #include "Data/WebConnection.hpp"
+#include "MQTT.hpp"
 
 #include "esp_log.h"
+
+int volume;
+int board_state;
 
 extern "C"{
     void app_main(void);
@@ -51,6 +55,8 @@ void app_main(void){
     WiFi.begin("LabIoT", "labiot2020.");
 
     Radio.setup_event(WiFi);
+
+    MQTT mqtt("mqtt://alicinotestserver:1883", Radio);
 
     Radio.run();
 
