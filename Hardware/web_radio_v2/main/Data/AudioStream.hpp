@@ -8,6 +8,25 @@
 #include "audio_element.h"
 #include "board.h"
 
+enum AUDIO_CODEC{
+    AAC_DECODER,
+    AMR_ENCODER,
+    AMR_DECODER,
+    FLAC_DECODER,
+    MP3_DECODER,
+    OGG_DECODER,
+    OPUS_DECODER,
+    WAV_DECODER,
+    WAV_ENCODER
+};
+
+enum AUDIO_STREAM{
+    I2S_STREAM,
+    HTTP_STREAM,
+    FATFS_STREAM,
+    RAW_STREAM,
+    SPIFFS_STREAM
+};
 
 class AudioStream {
 protected:
@@ -15,9 +34,6 @@ protected:
     audio_board_handle_t board_handle;
 public:
     AudioStream();
-    audio_element_handle_t get_http_stream_reader();
-    audio_element_handle_t get_i2s_stream_writer();
-    audio_element_handle_t get_ogg_decoder();
     audio_board_handle_t get_board_handle();
 
 };

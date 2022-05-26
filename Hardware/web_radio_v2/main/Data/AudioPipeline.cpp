@@ -26,28 +26,6 @@ AudioPipeline::AudioPipeline() {
     this->activated = false;
 }
 
-esp_err_t AudioPipeline::register_to_pipeline(audio_element_handle_t audio_element_handle, std::string tag) {
-    //esp_err_t er = ESP_OK;
-    audio_pipeline_register(this->pipeline, audio_element_handle, tag.c_str());
-    this->link_tag.push_back(tag);
-    ESP_LOGD(__FILENAME__, "Element <<%s>> registered to Pipeline", tag.c_str());
-    return ESP_OK;
-}
-
-esp_err_t AudioPipeline::link_to_pipeline() {
-    esp_err_t out;
-    const char* a = link_tag.at(0).c_str();
-    const char* b = link_tag.at(1).c_str();
-    const char* c = link_tag.at(2).c_str();
-    const char* link_tag_t[3] = {a, b, c};
-    out = audio_pipeline_link(this->pipeline, &link_tag_t[0], link_tag.size());
-    if (out == ESP_OK) {
-        ESP_LOGD(__FILENAME__, "Elements linked to pipeline");
-        return out;
-    }
-    return ESP_FAIL;
-}
-
 esp_err_t AudioPipeline::setup_event(WebConnection network) {
     ESP_LOGD(__FILENAME__, "Setup event listener");
     audio_event_iface_cfg_t evt_cfg = AUDIO_EVENT_IFACE_DEFAULT_CFG();

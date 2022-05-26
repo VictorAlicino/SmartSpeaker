@@ -10,11 +10,9 @@
 #include "mqtt_client.h"
 #include "Data/WebRadio.hpp"
 
-extern int volume;
-extern int board_state;
-
 const char* TAG = __FILENAME__;
 
+extern WebRadio *Radio;
 
 MQTT::MQTT(std::string server_uri, WebRadio web_radio) {
     const char* server_uri_c = server_uri.c_str();
@@ -36,6 +34,8 @@ void MQTT::event_handler(void *handler_args, esp_event_base_t base, int32_t even
     esp_mqtt_event_handle_t event = static_cast<esp_mqtt_event_handle_t>(event_data);
     esp_mqtt_client_handle_t client = event->client;
     int msg_id;
+    char payload_s[50];
+    char topic_s[50];
     switch ((esp_mqtt_event_id_t)event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
@@ -62,16 +62,26 @@ void MQTT::event_handler(void *handler_args, esp_event_base_t base, int32_t even
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
-            printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            printf("DATA=%.*s\r\n", event->data_len, event->data);
-            if(strcmp(event->topic, "volume")){
-                volume = std::stoi(event->data);
+            strncpy(payload_s, event->data, event->data_len);
+            strncpy(topic_s, event->topic, event->topic_len);
+            payload_s[event->data_len] = 0;
+            topic_s[event->topic_len] = 0;
+
+            if(strcmp(topic_s, "volume") == 0){
                 ESP_LOGI(TAG, "CHANGING VOLUME");
+                audio_hal_set_volume(Radio->get_board_handle()->audio_hal, std::atoi(payload_s));
             }
-            if(strcmp(event->topic, "board")){
-                if(strcmp(event->data, "play")) board_state = PLAY; ESP_LOGI(TAG, "PLAY");
-                if(strcmp(event->data, "pause")) board_state = PAUSED; ESP_LOGI(TAG, "PAUSE");
-                if(strcmp(event->data, "stop")) board_state = STOPPED; ESP_LOGI(TAG, "STOP");
+            if(strcmp(topic_s, "board") == 0){
+                if(strcmp(payload_s, "play") == 0) {
+                    ESP_LOGI(TAG, "PLAY");
+                }
+                if(strcmp(payload_s, "pause") == 0) {
+
+                    ESP_LOGI(TAG, "PAUSE");
+                }
+                if(strcmp(payload_s, "stop") == 0) {
+                    ESP_LOGI(TAG, "STOP");
+                }
             }
             break;
         case MQTT_EVENT_ERROR:

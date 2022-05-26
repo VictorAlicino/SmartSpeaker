@@ -1,64 +1,54 @@
-#include "nvs_flash.h"
-
-#if __has_include("esp_idf_version.h")
-    #include "esp_idf_version.h"
-#else
-    #define ESP_IDF_VERSION_VAL(major, minor, patch) 1
-#endif
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 1, 0))
-    #include "esp_netif.h"
-#else
-    #include "tcpip_adapter.h"
-#endif
-
 #include "Data/WebRadio.hpp"
 #include "Data/WebConnection.hpp"
 #include "MQTT.hpp"
 
+#include "sdkconfig.h"
 #include "esp_log.h"
 
-int volume;
-int board_state;
+#include "Startup.hpp"
 
+// Global Variables
+    //nothing here
+// End of Global Variables
+
+// Global Objects
+WebRadio* Radio;
+WebConnection WiFi;
+MQTT* PubSub;
+// End of Global objects
+
+// Extern C Output
 extern "C"{
     void app_main(void);
 }
+// End of Extern C Output
 
 void app_main(void){
-    esp_log_level_set("WebRadio.cpp", ESP_LOG_DEBUG);
-    esp_log_level_set("*", ESP_LOG_VERBOSE);
-    esp_err_t err = nvs_flash_init();
-    if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
-        // NVS partition was truncated and needs to be erased
-        // Retry nvs_flash_init
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        err = nvs_flash_init();
-    }
+    init(ESP_LOG_DEBUG);
 
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 1, 0))
-    ESP_ERROR_CHECK(esp_netif_init());
+    char a[128];
+    scanf("%s", a);
+    printf("%s\n", a);
+
+    Radio = new WebRadio();
+
+#ifdef CONFIG_BROKER_URL
+    PubSub = new MQTT(CONFIG_BROKER_URL, *Radio);
 #else
-    tcpip_adapter_init();
-#endif
+    PubSub = new MQTT("mqtt://alicinotestserver:1883", *Radio);
+#endif //CONFIG_BROKER_URL
 
-    WebRadio Radio;
-    WebConnection WiFi;
-
-    Radio.register_to_pipeline(Radio.get_http_stream_reader(), "http");
-    Radio.register_to_pipeline(Radio.get_ogg_decoder(), "ogg");
-    Radio.register_to_pipeline(Radio.get_i2s_stream_writer(), "i2s");
-
-    Radio.link_to_pipeline();
-
-    Radio.add_uri("http://alicinotestserver:8000/labiot-radio.ogg");
+    ESP_LOGD(__FILENAME__, "Cheguei aqui");
 
     WiFi.begin("LabIoT", "labiot2020.");
 
-    Radio.setup_event(WiFi);
+    Radio->setup_event(WiFi);
 
-    MQTT mqtt("mqtt://alicinotestserver:1883", Radio);
+    Radio->link_to_pipeline(HTTP_STREAM, OGG_DECODER, I2S_STREAM);
 
-    Radio.run();
+    Radio->add_uri("http://alicinotestserver:8000/labiot-radio.ogg");
 
-    Radio.loop();
+    Radio->run();
+
+    Radio->loop();
 }

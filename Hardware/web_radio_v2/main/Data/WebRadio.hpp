@@ -16,9 +16,13 @@ private:
     std::vector<std::string>urls;
 
 public:
-    WebRadio(): urls() {}
+    WebRadio();
+    esp_err_t link_to_pipeline(AUDIO_STREAM reader, AUDIO_CODEC codec, AUDIO_STREAM writer);
     esp_err_t add_uri(std::string url);
     esp_err_t loop();
+    esp_err_t play();
+    esp_err_t pause();
+    esp_err_t stop();
 
 };
 

@@ -26,8 +26,6 @@ protected:
 
 public:
     AudioPipeline();
-    esp_err_t register_to_pipeline(audio_element_handle_t audio_element_handle, std::string tag);
-    esp_err_t link_to_pipeline();
     esp_err_t setup_event(WebConnection network);
     esp_err_t run();
     audio_event_iface_handle_t get_evt();
