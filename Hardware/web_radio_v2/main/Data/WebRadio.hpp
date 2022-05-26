@@ -14,6 +14,7 @@
 class WebRadio : public AudioStream, public AudioPipeline{
 private:
     std::vector<std::string>urls;
+    int volume_old;
 
 public:
     WebRadio();
@@ -23,6 +24,7 @@ public:
     esp_err_t play();
     esp_err_t pause();
     esp_err_t stop();
+    esp_err_t change_volume_to(int volume);
 
 };
 

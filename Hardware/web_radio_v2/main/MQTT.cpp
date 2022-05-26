@@ -68,19 +68,25 @@ void MQTT::event_handler(void *handler_args, esp_event_base_t base, int32_t even
             topic_s[event->topic_len] = 0;
 
             if(strcmp(topic_s, "volume") == 0){
-                ESP_LOGI(TAG, "CHANGING VOLUME");
-                audio_hal_set_volume(Radio->get_board_handle()->audio_hal, std::atoi(payload_s));
+                Radio->change_volume_to(std::atoi(payload_s));
             }
             if(strcmp(topic_s, "board") == 0){
                 if(strcmp(payload_s, "play") == 0) {
                     ESP_LOGI(TAG, "PLAY");
+                    Radio->play();
                 }
                 if(strcmp(payload_s, "pause") == 0) {
-
+                    Radio->pause();
                     ESP_LOGI(TAG, "PAUSE");
                 }
                 if(strcmp(payload_s, "stop") == 0) {
+                    Radio->pause();
                     ESP_LOGI(TAG, "STOP");
+                }
+                if(strcmp(payload_s, "start") == 0) {
+                    Radio->restart();
+                    Radio->play();
+                    ESP_LOGI(TAG, "Pipeline started");
                 }
             }
             break;

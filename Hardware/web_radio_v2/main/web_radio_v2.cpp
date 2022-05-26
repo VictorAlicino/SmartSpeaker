@@ -26,10 +26,6 @@ extern "C"{
 void app_main(void){
     init(ESP_LOG_DEBUG);
 
-    char a[128];
-    scanf("%s", a);
-    printf("%s\n", a);
-
     Radio = new WebRadio();
 
 #ifdef CONFIG_BROKER_URL

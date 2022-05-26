@@ -28,6 +28,7 @@ public:
     AudioPipeline();
     esp_err_t setup_event(WebConnection network);
     esp_err_t run();
+    esp_err_t restart();
     audio_event_iface_handle_t get_evt();
     esp_err_t stop();
 

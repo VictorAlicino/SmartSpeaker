@@ -54,6 +54,16 @@ esp_err_t AudioPipeline::run() {
     return ESP_OK;
 }
 
+esp_err_t AudioPipeline::restart() {
+    audio_pipeline_stop(this->pipeline);
+    audio_pipeline_wait_for_stop(this->pipeline);
+    audio_pipeline_terminate(this->pipeline);
+    audio_pipeline_reset_ringbuffer(this->pipeline);
+    audio_pipeline_reset_elements(this->pipeline);
+    audio_pipeline_run(this->pipeline);
+    return ESP_OK;
+}
+
 audio_event_iface_handle_t AudioPipeline::get_evt() {
     return this->evt;
 }

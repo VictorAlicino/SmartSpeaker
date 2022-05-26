@@ -16,10 +16,13 @@
 #include "board.h"
 #include "MQTT.hpp"
 
+#include "math.h"
+
 const char* WEBRADIO_TAG = __FILENAME__;
 
 WebRadio::WebRadio() {
     ESP_LOGD(__FILENAME__, "Construindo %s", __FILENAME__);
+    this->volume_old = 50;
 }
 
 esp_err_t WebRadio::add_uri(std::string url) {
@@ -77,6 +80,41 @@ esp_err_t WebRadio::link_to_pipeline(AUDIO_STREAM reader, AUDIO_CODEC codec, AUD
     if (er == ESP_OK) ESP_LOGD(WEBRADIO_TAG, "Elements linked to pipeline");
 
     return er;
+}
+
+esp_err_t WebRadio::change_volume_to(int volume){
+    esp_err_t err = ESP_OK;
+    int cur_volume;
+    const TickType_t xDelay = 1 / portTICK_PERIOD_MS;
+    audio_hal_get_volume(this->board_handle->audio_hal, &cur_volume);
+    ESP_LOGI(WEBRADIO_TAG, "Changing Volume from %d to %d", cur_volume, volume);
+
+    if(cur_volume < volume){
+        for(;cur_volume < volume; cur_volume++) {
+            audio_hal_set_volume(this->board_handle->audio_hal, cur_volume);
+            vTaskDelay(xDelay*100);
+        }
+    }else{
+        for(;cur_volume > volume; cur_volume--) {
+            audio_hal_set_volume(this->board_handle->audio_hal, cur_volume);
+            vTaskDelay(xDelay*300);
+        }
+    }
+
+    return err;
+}
+
+esp_err_t WebRadio::pause() {
+    audio_hal_get_volume(this->board_handle->audio_hal, &this->volume_old);
+    change_volume_to(0);
+    ESP_LOGI(WEBRADIO_TAG, "Sound Paused");
+    return ESP_OK;
+}
+
+esp_err_t WebRadio::play() {
+    change_volume_to(this->volume_old);
+    ESP_LOGI(WEBRADIO_TAG, "Sound Play");
+    return ESP_OK;
 }
 
 esp_err_t WebRadio::loop() {
