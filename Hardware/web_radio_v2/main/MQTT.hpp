@@ -2,8 +2,8 @@
 // Created by Victor Alicino on 25/05/22.
 //
 
-#ifndef WEB_RADIO_V2_MQTT_H
-#define WEB_RADIO_V2_MQTT_H
+#ifndef SMART_SPEAKER_MQTT_H
+#define SMART_SPEAKER_MQTT_H
 
 #include <string>
 
@@ -31,4 +31,4 @@ public:
 };
 
 
-#endif //WEB_RADIO_V2_MQTT_H
+#endif //SMART_SPEAKER_MQTT_H

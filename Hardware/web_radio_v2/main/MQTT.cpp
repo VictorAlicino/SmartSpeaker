@@ -10,7 +10,7 @@
 #include "mqtt_client.h"
 #include "Data/WebRadio.hpp"
 
-const char* TAG = __FILENAME__;
+const char* MQTT_TAG = __FILENAME__;
 
 extern WebRadio *Radio;
 
@@ -30,7 +30,7 @@ MQTT::MQTT(std::string server_uri, WebRadio web_radio) {
 }
 
 void MQTT::event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data){
-    ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
+    ESP_LOGD(MQTT_TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
     esp_mqtt_event_handle_t event = static_cast<esp_mqtt_event_handle_t>(event_data);
     esp_mqtt_client_handle_t client = event->client;
     int msg_id;
@@ -38,30 +38,30 @@ void MQTT::event_handler(void *handler_args, esp_event_base_t base, int32_t even
     char topic_s[50];
     switch ((esp_mqtt_event_id_t)event_id) {
         case MQTT_EVENT_CONNECTED:
-            ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
+            ESP_LOGI(MQTT_TAG, "MQTT_EVENT_CONNECTED");
             msg_id = esp_mqtt_client_publish(client, "board", "LyraT Ativado", 0, 1, 0);
-            ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
+            ESP_LOGI(MQTT_TAG, "sent publish successful, msg_id=%d", msg_id);
 
             msg_id = esp_mqtt_client_subscribe(client, "volume", 0);
-            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+            ESP_LOGI(MQTT_TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
             msg_id = esp_mqtt_client_subscribe(client, "board", 0);
-            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+            ESP_LOGI(MQTT_TAG, "sent subscribe successful, msg_id=%d", msg_id);
             break;
         case MQTT_EVENT_DISCONNECTED:
-            ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
+            ESP_LOGI(MQTT_TAG, "MQTT_EVENT_DISCONNECTED");
             break;
         case MQTT_EVENT_SUBSCRIBED:
-            ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
+            ESP_LOGI(MQTT_TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
             break;
         case MQTT_EVENT_UNSUBSCRIBED:
-            ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
+            ESP_LOGI(MQTT_TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
             break;
         case MQTT_EVENT_PUBLISHED:
-            ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
+            ESP_LOGI(MQTT_TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
             break;
         case MQTT_EVENT_DATA:
-            ESP_LOGI(TAG, "MQTT_EVENT_DATA");
+            ESP_LOGI(MQTT_TAG, "MQTT_EVENT_DATA");
             strncpy(payload_s, event->data, event->data_len);
             strncpy(topic_s, event->topic, event->topic_len);
             payload_s[event->data_len] = 0;
@@ -72,33 +72,33 @@ void MQTT::event_handler(void *handler_args, esp_event_base_t base, int32_t even
             }
             if(strcmp(topic_s, "board") == 0){
                 if(strcmp(payload_s, "play") == 0) {
-                    ESP_LOGI(TAG, "PLAY");
+                    ESP_LOGI(MQTT_TAG, "PLAY");
                     Radio->play();
                 }
                 if(strcmp(payload_s, "pause") == 0) {
                     Radio->pause();
-                    ESP_LOGI(TAG, "PAUSE");
+                    ESP_LOGI(MQTT_TAG, "PAUSE");
                 }
                 if(strcmp(payload_s, "stop") == 0) {
                     Radio->pause();
-                    ESP_LOGI(TAG, "STOP");
+                    ESP_LOGI(MQTT_TAG, "STOP");
                 }
                 if(strcmp(payload_s, "start") == 0) {
                     Radio->restart();
                     Radio->play();
-                    ESP_LOGI(TAG, "Pipeline started");
+                    ESP_LOGI(MQTT_TAG, "Pipeline started");
                 }
             }
             break;
         case MQTT_EVENT_ERROR:
-            ESP_LOGE(TAG, "MQTT_EVENT_ERROR");
+            ESP_LOGE(MQTT_TAG, "MQTT_EVENT_ERROR");
             if (event->error_handle->error_type == MQTT_ERROR_TYPE_TCP_TRANSPORT) {
-                ESP_LOGI(TAG, "Last errno string (%s)", strerror(event->error_handle->esp_transport_sock_errno));
+                ESP_LOGI(MQTT_TAG, "Last errno string (%s)", strerror(event->error_handle->esp_transport_sock_errno));
 
             }
             break;
         default:
-            ESP_LOGI(TAG, "Other event id:%d", event->event_id);
+            ESP_LOGI(MQTT_TAG, "Other event id:%d", event->event_id);
             break;
     }
 }

@@ -1,14 +1,17 @@
+// Project Includes
 #include "Data/WebRadio.hpp"
 #include "Data/WebConnection.hpp"
 #include "MQTT.hpp"
+#include "Startup.hpp"
+// End of Project Includes
 
+// ESP-IDF Includes
 #include "sdkconfig.h"
 #include "esp_log.h"
-
-#include "Startup.hpp"
+// End of ESP-IDF Includes
 
 // Global Variables
-    //nothing here
+std::string device_name;
 // End of Global Variables
 
 // Global Objects
