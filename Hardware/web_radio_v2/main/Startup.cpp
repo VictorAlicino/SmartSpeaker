@@ -3,14 +3,15 @@
 //
 
 #include "Startup.hpp"
+#include "Device.hpp"
 
 #if __has_include("esp_idf_version.h")
     #include "esp_idf_version.h"
 #else
-#define ESP_IDF_VERSION_VAL(major, minor, patch) 1
+    #define ESP_IDF_VERSION_VAL(major, minor, patch) 1
 #endif
-#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 1, 0))
 
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 1, 0))
     #include "esp_netif.h"
 #else
     #include "tcpip_adapter.h"
@@ -19,7 +20,12 @@
 #include "nvs_flash.h"
 #include "esp_log.h"
 
+extern Device* Board;
+
+const char* STARTUP_TAG;
+
 esp_err_t init(esp_log_level_t level){
+    ESP_LOGI(STARTUP_TAG, "Board fullname: %s", *Board->get_full_name().c_str());
     esp_log_level_set("*", level);
 
     esp_err_t err = nvs_flash_init();

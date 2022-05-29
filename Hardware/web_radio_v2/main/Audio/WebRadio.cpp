@@ -21,8 +21,8 @@
 const char* WEBRADIO_TAG = __FILENAME__;
 
 WebRadio::WebRadio() {
-    ESP_LOGD(__FILENAME__, "Construindo %s", __FILENAME__);
     this->volume_old = 50;
+    this->url_available = false;
 }
 
 esp_err_t WebRadio::add_uri(std::string url) {

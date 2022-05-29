@@ -1,7 +1,8 @@
 // Project Includes
-#include "Data/WebRadio.hpp"
-#include "Data/WebConnection.hpp"
+#include "Audio/WebRadio.hpp"
+#include "Audio/WebConnection.hpp"
 #include "MQTT.hpp"
+#include "Device.hpp"
 #include "Startup.hpp"
 // End of Project Includes
 
@@ -10,11 +11,16 @@
 #include "esp_log.h"
 // End of ESP-IDF Includes
 
+// General Includes
+#include <string>
+//End of General Includes
+
 // Global Variables
-std::string device_name;
+    // Nothing here
 // End of Global Variables
 
 // Global Objects
+Device* Board;
 WebRadio* Radio;
 WebConnection WiFi;
 MQTT* PubSub;
@@ -26,7 +32,9 @@ extern "C"{
 }
 // End of Extern C Output
 
+// Main Function
 void app_main(void){
+    Board = new Board();
     init(ESP_LOG_DEBUG);
 
     Radio = new WebRadio();
@@ -36,6 +44,12 @@ void app_main(void){
 #else
     PubSub = new MQTT("mqtt://alicinotestserver:1883", *Radio);
 #endif //CONFIG_BROKER_URL
+
+#ifdef CONFIG_WIFI_SSID
+    WiFi.begin(CONFIG_WIFI_SSID, CONFIG_WIFI_PASSWORD);
+#else
+    WiFi.begin("LabIoT", "labiot2020.");
+#endif //CONFIG_WIFI_SSID
 
     ESP_LOGD(__FILENAME__, "Cheguei aqui");
 
