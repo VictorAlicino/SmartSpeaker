@@ -62,8 +62,8 @@ void MQTT::event_handler(void *handler_args, esp_event_base_t base, int32_t even
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGI(MQTT_TAG, "MQTT_EVENT_DATA");
-            strncpy(payload_s, event->data, event->data_len);
-            strncpy(topic_s, event->topic, event->topic_len);
+            strncpy_s(payload_s, event->data, event->data_len);
+            strncpy_s(topic_s, event->topic, event->topic_len);
             payload_s[event->data_len] = 0;
             topic_s[event->topic_len] = 0;
 

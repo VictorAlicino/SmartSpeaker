@@ -3,6 +3,8 @@
 //
 
 #include "WebRadio.hpp"
+#include "MQTT.hpp"
+#include "Device.hpp"
 
 #include "esp_log.h"
 #include "audio_element.h"
@@ -14,9 +16,10 @@
 #include "periph_adc_button.h"
 #include "periph_button.h"
 #include "board.h"
-#include "MQTT.hpp"
 
 #include "math.h"
+
+extern Device* Board;
 
 const char* WEBRADIO_TAG = __FILENAME__;
 
@@ -89,140 +92,142 @@ esp_err_t WebRadio::change_volume_to(int volume){
     audio_hal_get_volume(this->board_handle->audio_hal, &cur_volume);
     ESP_LOGI(WEBRADIO_TAG, "Changing Volume from %d to %d", cur_volume, volume);
 
+    // Handling out of range volumes
+    if(volume > 100) audio_hal_set_volume(this->board_handle->audio_hal, 100);
+    if(volume < 0) audio_hal_set_volume(this->board_handle->audio_hal, 0);
+
+    // Audio volume transition
     if(cur_volume < volume){
         for(;cur_volume < volume; cur_volume++) {
             audio_hal_set_volume(this->board_handle->audio_hal, cur_volume);
-            vTaskDelay(xDelay*100);
+            vTaskDelay(xDelay*200);
         }
     }else{
         for(;cur_volume > volume; cur_volume--) {
             audio_hal_set_volume(this->board_handle->audio_hal, cur_volume);
-            vTaskDelay(xDelay*300);
+            vTaskDelay(xDelay*350);
         }
     }
+    // End of Audio volume transition
 
     return err;
 }
 
-esp_err_t WebRadio::pause() {
-    audio_hal_get_volume(this->board_handle->audio_hal, &this->volume_old);
-    change_volume_to(0);
-    ESP_LOGI(WEBRADIO_TAG, "Sound Paused");
-    return ESP_OK;
-}
-
-esp_err_t WebRadio::play() {
-    change_volume_to(this->volume_old);
-    ESP_LOGI(WEBRADIO_TAG, "Sound Play");
-    return ESP_OK;
-}
-
 esp_err_t WebRadio::loop() {
     int player_volume;
-    audio_hal_get_volume(this->board_handle->audio_hal, &player_volume);
-    //audio_hal_get_volume(this->board_handle->audio_hal, &volume);
 
-    ESP_LOGI(WEBRADIO_TAG, "[ 3 ] Initialize peripherals");
-    esp_periph_config_t periph_cfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
-    esp_periph_set_handle_t set = esp_periph_set_init(&periph_cfg);
+    audio_hal_get_volume(
+            this->board_handle->audio_hal,
+            &player_volume
+            );
 
-    audio_event_iface_set_listener(esp_periph_set_get_event_iface(set), this->evt);
+    esp_periph_set_handle_t set = Board->peripheral_init(
+            "set1",
+            DEFAULT_ESP_PERIPH_SET_CONFIG()
+            );
 
-    ESP_LOGI(WEBRADIO_TAG, "[3.1] Initialize keys on board");
+    audio_event_iface_set_listener(
+            esp_periph_set_get_event_iface(set),
+            this->evt
+            );
+
+    ESP_LOGI(WEBRADIO_TAG, "Initializing keys on board");
     audio_board_key_init(set);
 
-    while(this->activated){
-        audio_element_state_t el_state = audio_element_get_state(this->i2s_stream_writer);
+    while(this->pipeline_state == ACTIVE){
         audio_event_iface_msg_t msg;
         esp_err_t ret = audio_event_iface_listen(this->evt, &msg, portMAX_DELAY);
+
         if (ret != ESP_OK) {
             ESP_LOGE(WEBRADIO_TAG, "[ * ] Event interface error : %d", ret);
             continue;
         }
 
+        // If event receive an info data
         if (msg.source_type == AUDIO_ELEMENT_TYPE_ELEMENT
-            && msg.source == (void *) this->ogg_decoder
-            && msg.cmd == AEL_MSG_CMD_REPORT_MUSIC_INFO) {
-            audio_element_info_t music_info = {
-                    0
-            };
-            audio_element_getinfo(this->ogg_decoder, &music_info);
-
-            ESP_LOGI(WEBRADIO_TAG, "[ * ] Receive music info from ogg decoder, sample_rates=%d, bits=%d, ch=%d",
-                     music_info.sample_rates, music_info.bits, music_info.channels);
-
-            audio_element_setinfo(this->i2s_stream_writer, &music_info);
-            i2s_stream_set_clk(this->i2s_stream_writer, music_info.sample_rates,
-                               music_info.bits, music_info.channels);
-            continue;
+        && msg.source == (void *) this->ogg_decoder
+        && msg.cmd == AEL_MSG_CMD_REPORT_MUSIC_INFO) {
+                on_music_info();
+                continue;
         }
 
         // Stop when the last pipeline element (i2s_stream_writer in this case) receives stop event
-        if (msg.source_type == AUDIO_ELEMENT_TYPE_ELEMENT && msg.source == (void *) this->i2s_stream_writer
-            && msg.cmd == AEL_MSG_CMD_REPORT_STATUS
-            && (((int)msg.data == AEL_STATUS_STATE_STOPPED) || ((int)msg.data == AEL_STATUS_STATE_FINISHED))) {
-            ESP_LOGW(WEBRADIO_TAG, "[ * ] Stop event received");
-            break;
+        if (msg.source_type == AUDIO_ELEMENT_TYPE_ELEMENT
+        && msg.source == (void *) this->i2s_stream_writer
+        && msg.cmd == AEL_MSG_CMD_REPORT_STATUS
+        && (((int)msg.data == AEL_STATUS_STATE_STOPPED)
+        || ((int)msg.data == AEL_STATUS_STATE_FINISHED))) {
+            ESP_LOGW(WEBRADIO_TAG, "Stop event received");
+            this->pipeline_state = STOPPED;
         }
 
-        if ((msg.source_type == PERIPH_ID_TOUCH || msg.source_type == PERIPH_ID_BUTTON || msg.source_type == PERIPH_ID_ADC_BTN)
-            && (msg.cmd == PERIPH_TOUCH_TAP || msg.cmd == PERIPH_BUTTON_PRESSED || msg.cmd == PERIPH_ADC_BUTTON_PRESSED)) {
-            if ((int) msg.data == get_input_play_id()) {
-                ESP_LOGI(WEBRADIO_TAG, "[ * ] [Play] touch tap event");
-                switch (el_state) {
-                    case AEL_STATE_INIT :
-                        ESP_LOGI(WEBRADIO_TAG, "[ * ] Starting audio pipeline");
-                        audio_pipeline_run(pipeline);
-                        break;
-                    case AEL_STATE_RUNNING :
-                        ESP_LOGI(WEBRADIO_TAG, "[ * ] Pausing audio pipeline");
-                        audio_pipeline_pause(pipeline);
-                        break;
-                    case AEL_STATE_PAUSED :
-                        ESP_LOGI(WEBRADIO_TAG, "[ * ] Resuming audio pipeline");
-                        audio_pipeline_resume(pipeline);
-                        break;
-                    case AEL_STATE_FINISHED :
-                        ESP_LOGI(WEBRADIO_TAG, "[ * ] Rewinding audio pipeline");
-                        audio_pipeline_reset_ringbuffer(pipeline);
-                        audio_pipeline_reset_elements(pipeline);
-                        audio_pipeline_change_state(pipeline, AEL_STATE_INIT);
-                        audio_pipeline_run(pipeline);
-                        break;
-                    default :
-                        ESP_LOGI(WEBRADIO_TAG, "[ * ] Not supported state %d", el_state);
-                }
-            } else if ((int) msg.data == get_input_set_id()) {
-                ESP_LOGI(WEBRADIO_TAG, "[ * ] [Set] touch tap event");
-                ESP_LOGI(WEBRADIO_TAG, "[ * ] Stopping audio pipeline");
-                break;
-            } else if ((int) msg.data == get_input_mode_id()) {
-                ESP_LOGI(WEBRADIO_TAG, "[ * ] [mode] tap event");
-                audio_pipeline_stop(pipeline);
-                audio_pipeline_wait_for_stop(pipeline);
-                audio_pipeline_terminate(pipeline);
-                audio_pipeline_reset_ringbuffer(pipeline);
-                audio_pipeline_reset_elements(pipeline);
-                audio_pipeline_run(pipeline);
-            } else if ((int) msg.data == get_input_volup_id()) {
-                ESP_LOGI(WEBRADIO_TAG, "[ * ] [Vol+] touch tap event");
-                player_volume += 10;
-                if (player_volume > 100) {
-                    player_volume = 100;
-                }
-                audio_hal_set_volume(this->board_handle->audio_hal, player_volume);
-                ESP_LOGI(WEBRADIO_TAG, "[ * ] Volume set to %d %%", player_volume);
-            } else if ((int) msg.data == get_input_voldown_id()) {
-                ESP_LOGI(WEBRADIO_TAG, "[ * ] [Vol-] touch tap event");
-                player_volume -= 10;
-                if (player_volume < 0) {
-                    player_volume = 0;
-                }
-                audio_hal_set_volume(this->board_handle->audio_hal, player_volume);
-                ESP_LOGI(WEBRADIO_TAG, "[ * ] Volume set to %d %%", player_volume);
+        if (Board->is_board_button_event(msg)){
+            if(msg.cmd == 0){
+                // Button status unchanged
+                ESP_LOGI(WEBRADIO_TAG, "Button status unchanged");
+            }
+            if((int) msg.data == Board->button.play){
+                // Play button pressed
+                on_play_button_pressed();
+            }
+            else if((int) msg.data == Board->button.set){
+                // Set button pressed
+                //TODO Mudar URI da rádio web
+            }
+            else if((int) msg.data == Board->button.volup){
+                // Vol+ button pressed
+                change_volume_to(player_volume + 10);
+            }
+            else if((int) msg.data == Board->button.voldown){
+                // Vol- button pressed
+                change_volume_to(player_volume - 10);
+
+            }
+            else if((int) msg.data == Board->button.mode){
+                // Mode button pressed
+            }
+            else if((int) msg.data == Board->button.rec){
+                // Rec button pressed
             }
         }
         audio_hal_get_volume(this->board_handle->audio_hal, &player_volume);
     }
     return ESP_OK;
+}
+
+void WebRadio::on_music_info() {
+    audio_element_info_t music_info = {
+            0
+    };
+    audio_element_getinfo(
+            this->ogg_decoder,
+            &music_info
+    );
+
+    ESP_LOGI(WEBRADIO_TAG, "Receive music info from ogg decoder\nsample_rates=%d\nbits=%d\nch=%d",
+             music_info.sample_rates, music_info.bits, music_info.channels);
+
+    audio_element_setinfo(this->i2s_stream_writer, &music_info);
+    i2s_stream_set_clk(this->i2s_stream_writer, music_info.sample_rates,
+                       music_info.bits, music_info.channels);
+}
+
+void WebRadio::on_play_button_pressed() {
+    audio_element_state_t el_state = audio_element_get_state(this->i2s_stream_writer);
+
+    if(el_state == AEL_STATE_INIT){
+        run();
+    }
+    else if(el_state == AEL_STATE_RUNNING){
+        pause();
+    }
+    else if(el_state == AEL_STATE_PAUSED){
+        resume();
+    }
+    else if(el_state == AEL_STATE_FINISHED){
+        restart();
+    }
+    else{
+        ESP_LOGI(WEBRADIO_TAG, "Not supported state %d", el_state);
+    }
 }

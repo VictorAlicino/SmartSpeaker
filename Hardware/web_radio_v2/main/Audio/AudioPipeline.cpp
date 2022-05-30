@@ -32,11 +32,9 @@ esp_err_t AudioPipeline::setup_event(WebConnection network) {
     this->evt = audio_event_iface_init(&evt_cfg);
     ESP_LOGI(__FILENAME__, "Event listener created");
 
-
     ESP_LOGD(__FILENAME__, "Listening event from all elements of pipeline");
     audio_pipeline_set_listener(this->pipeline, this->evt);
     ESP_LOGI(__FILENAME__, "Listening event from all elements of pipeline");
-
 
     ESP_LOGD(__FILENAME__, "Listening event from peripherals");
     audio_event_iface_set_listener(
@@ -44,13 +42,25 @@ esp_err_t AudioPipeline::setup_event(WebConnection network) {
             this->evt);
     ESP_LOGI(__FILENAME__, "Listening event from peripherals");
 
-
     return ESP_OK;
 }
 
 esp_err_t AudioPipeline::run() {
     audio_pipeline_run(this->pipeline);
+    this->pipeline_state = ACTIVE;
     this->activated = true;
+    return ESP_OK;
+}
+
+esp_err_t AudioPipeline::pause() {
+    audio_pipeline_pause(this->pipeline);
+    this->pipeline_state = PAUSED;
+    return ESP_OK;
+}
+
+esp_err_t AudioPipeline::resume() {
+    audio_pipeline_resume(this->pipeline);
+    this->pipeline_state = ACTIVE;
     return ESP_OK;
 }
 
@@ -79,5 +89,6 @@ esp_err_t AudioPipeline::stop() {
         audio_pipeline_unregister(this->pipeline, )
     }
      */
+    this->pipeline_state = STOPPED;
     return ESP_OK;
 }

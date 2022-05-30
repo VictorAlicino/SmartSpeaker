@@ -35,6 +35,7 @@ extern "C"{
 // Main Function
 void app_main(void){
     Board = new Board();
+
     init(ESP_LOG_DEBUG);
 
     Radio = new WebRadio();

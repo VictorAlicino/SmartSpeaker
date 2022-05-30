@@ -13,11 +13,17 @@
 #include "WebConnection.hpp"
 #include "AudioStream.hpp"
 
+enum PIPELINE_STATE{
+    ACTIVE,
+    PAUSED,
+    STOPPED
+};
+
 class AudioPipeline {
 protected:
     //Pipeline
     bool url_available;
-    bool activated;
+    int pipeline_state;
     audio_pipeline_handle_t pipeline;
     std::vector<std::string>link_tag;
 
@@ -25,14 +31,19 @@ protected:
     audio_event_iface_handle_t evt;
 
 public:
+    // Pipeline configurations
     AudioPipeline();
     esp_err_t setup_event(WebConnection network);
+
+    // Pipeline controls
     esp_err_t run();
+    esp_err_t pause();
+    esp_err_t resume();
     esp_err_t restart();
-    audio_event_iface_handle_t get_evt();
     esp_err_t stop();
 
-    //C
+    //Pipeline getters and setters
+    audio_event_iface_handle_t get_evt();
 };
 
 
