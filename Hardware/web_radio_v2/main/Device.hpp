@@ -16,17 +16,17 @@
 #include <map>
 
 typedef struct BoardButtonsIDs{
-    int8_t play,
-    int8_t set,
-    int8_t mode,
-    int8_t volup,
-    int8_t voldown,
-    int8_t rec
+    int8_t play;
+    int8_t set;
+    int8_t mode;
+    int8_t volup;
+    int8_t voldown;
+    int8_t rec;
 } BoardButtons;
 
 typedef struct BoardLEDIDs{
-    int8_t green,
-    int8_t blue
+    int8_t green;
+    int8_t blue;
 } BoardLEDs;
 
 class Device{
@@ -39,12 +39,12 @@ public:
     Device();
     BoardButtons button;
     BoardLEDs led;
-    std::string get_full_name;
-    std::string get_name;
-    std::string get_code;
+    std::string get_full_name();
+    std::string get_name();
+    std::string get_code();
     esp_periph_set_handle_t peripheral_init(std::string set_name, esp_periph_config_t config);
     esp_periph_set_handle_t get_peripheral_handle(std::string set_name);
     bool is_board_button_event(audio_event_iface_msg_t &msg);
-}
+};
 
 #endif //SMART_SPEAKER_DEVICE_H

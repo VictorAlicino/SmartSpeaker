@@ -23,7 +23,6 @@ AudioPipeline::AudioPipeline() {
     this->pipeline = audio_pipeline_init(&pipeline_cfg);
     mem_assert(this->pipeline);
     this->url_available = false;
-    this->activated = false;
 }
 
 esp_err_t AudioPipeline::setup_event(WebConnection network) {
@@ -48,7 +47,6 @@ esp_err_t AudioPipeline::setup_event(WebConnection network) {
 esp_err_t AudioPipeline::run() {
     audio_pipeline_run(this->pipeline);
     this->pipeline_state = ACTIVE;
-    this->activated = true;
     return ESP_OK;
 }
 
@@ -65,11 +63,7 @@ esp_err_t AudioPipeline::resume() {
 }
 
 esp_err_t AudioPipeline::restart() {
-    audio_pipeline_stop(this->pipeline);
-    audio_pipeline_wait_for_stop(this->pipeline);
-    audio_pipeline_terminate(this->pipeline);
-    audio_pipeline_reset_ringbuffer(this->pipeline);
-    audio_pipeline_reset_elements(this->pipeline);
+    stop();
     audio_pipeline_run(this->pipeline);
     return ESP_OK;
 }

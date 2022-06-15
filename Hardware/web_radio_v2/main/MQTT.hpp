@@ -11,13 +11,7 @@
 #include "mqtt_client.h"
 #include "board.h"
 
-#include "Data/WebRadio.hpp"
-
-enum states_board{
-    PLAY = 3,
-    PAUSED = 4,
-    STOPPED = 6
-};
+#include "Audio/WebRadio.hpp"
 
 class MQTT {
 protected:

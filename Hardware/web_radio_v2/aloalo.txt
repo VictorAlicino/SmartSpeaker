@@ -1,0 +1,161 @@
+Executing action: monitor
+Serial port /dev/cu.usbserial-1470
+Connecting....
+Detecting chip type... Unsupported detection protocol, switching and trying again...
+Connecting...
+Detecting chip type...ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x1f (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:6612
+load:0x40078000,len:14780
+load:0x40080400,len:3792
+entry 0x40080694
+[0;32mI (27) boot: ESP-IDF v4.4-dirty 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time 15:37:23[0m
+[0;32mI (27) boot: chip revision: 3[0m
+[0;32mI (30) boot_comm: chip revision: 3, min. bootloader chip revision: 0[0m
+[0;32mI (38) boot.esp32: SPI Speed      : 40MHz[0m
+[0;32mI (42) boot.esp32: SPI Mode       : DIO[0m
+[0;32mI (47) boot.esp32: SPI Flash Size : 2MB[0m
+[0;32mI (51) boot: Enabling RNG early entropy source...[0m
+[0;32mI (57) boot: Partition Table:[0m
+[0;32mI (60) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (82) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (90) boot: End of partition table[0m
+[0;32mI (94) boot_comm: chip revision: 3, min. application chip revision: 0[0m
+[0;32mI (101) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=319e4h (203236) map[0m
+[0;32mI (183) esp_image: segment 1: paddr=00041a0c vaddr=3ffb0000 size=03728h ( 14120) load[0m
+[0;32mI (189) esp_image: segment 2: paddr=0004513c vaddr=40080000 size=0aedch ( 44764) load[0m
+[0;32mI (208) esp_image: segment 3: paddr=00050020 vaddr=400d0020 size=aae9ch (700060) map[0m
+[0;32mI (461) esp_image: segment 4: paddr=000faec4 vaddr=4008aedc size=0aaach ( 43692) load[0m
+[0;32mI (480) esp_image: segment 5: paddr=00105978 vaddr=50000000 size=00010h (    16) load[0m
+[0;32mI (490) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (490) boot: Disabling RNG early entropy source...[0m
+[0;32mI (502) cpu_start: Pro cpu up.[0m
+[0;32mI (502) cpu_start: Starting app cpu, entry point is 0x40081418[0m
+[0;32mI (0) cpu_start: App cpu up.[0m
+[0;32mI (516) cpu_start: Pro cpu start user code[0m
+[0;32mI (516) cpu_start: cpu freq: 160000000[0m
+[0;32mI (516) cpu_start: Application information:[0m
+[0;32mI (521) cpu_start: Project name:     SmartSpeaker[0m
+[0;32mI (526) cpu_start: App version:      45041cc-dirty[0m
+[0;32mI (532) cpu_start: Compile time:     Jun  1 2022 17:09:10[0m
+[0;32mI (538) cpu_start: ELF file SHA256:  ffea64a2c35b7980...[0m
+[0;32mI (544) cpu_start: ESP-IDF:          v4.4-dirty[0m
+[0;32mI (549) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (556) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM[0m
+[0;32mI (562) heap_init: At 3FFB7748 len 000288B8 (162 KiB): DRAM[0m
+[0;32mI (568) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (575) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (581) heap_init: At 40095988 len 0000A678 (41 KiB): IRAM[0m
+[0;32mI (589) spi_flash: detected chip: gd[0m
+[0;32mI (592) spi_flash: flash io: dio[0m
+[0;33mW (596) spi_flash: Detected size(8192k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (610) cpu_start: Starting scheduler on PRO CPU.[0m
+[0;32mI (0) cpu_start: Starting scheduler on APP CPU.[0m
+[0;32mI (693) gpio: GPIO[19]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:3 [0m
+[0;32mI (703) gpio: GPIO[21]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (703) ES8388_DRIVER: init,out:02, in:00[0m
+[0;32mI (713) AUDIO_HAL: Codec mode is 2, Ctrl:1[0m
+[0;32mI (713) AudioStream.cpp: Audio CODEC chip successfully started[0m
+[0;32mI (713) AudioStream.cpp: HTTP data input stream created[0m
+[0;32mI (723) I2S: APLL expected frequency is 22579200 Hz, real frequency is 22579193 Hz[0m
+[0;32mI (733) I2S: DMA Malloc info, datalen=blocksize=1200, dma_buf_count=3[0m
+[0;32mI (743) I2S: DMA Malloc info, datalen=blocksize=1200, dma_buf_count=3[0m
+[0;32mI (743) I2S: I2S0, MCLK output by GPIO0[0m
+[0;32mI (753) LYRAT_V4_3: I2S0, MCLK output by GPIO0[0m
+[0;32mI (753) AudioStream.cpp: I2S data output stream initialized[0m
+[0;32mI (763) AudioStream.cpp: OGG decoder created[0m
+[0;32mI (763) system_api: Base MAC address is not set[0m
+[0;32mI (773) system_api: read default base MAC address from EFUSE[0m
+[0;31mE (783) gpio: gpio_install_isr_service(449): GPIO isr service already installed[0m
+[0;32mI (783) MQTT.cpp: Other event id:7[0m
+[0;31mE (793) esp-tls: couldn't get hostname for :alicinotestserver: getaddrinfo() returns 202, addrinfo=0x0[0m
+[0;31mE (803) TRANSPORT_BASE: Failed to open a new connection: 32769[0m
+[0;31mE (803) MQTT_CLIENT: Error transport connect[0m
+[0;31mE (813) MQTT.cpp: MQTT_EVENT_ERROR[0m
+[0;32mI (813) MQTT.cpp: Last errno string (Success)[0m
+[0;32mI (823) MQTT.cpp: MQTT_EVENT_DISCONNECTED[0m
+I (833) wifi:wifi driver task: 3ffc7de8, prio:23, stack:6656, core=0
+I (853) wifi:wifi firmware version: 7679c42
+I (853) wifi:wifi certification version: v7.0
+I (853) wifi:config NVS flash: enabled
+I (853) wifi:config nano formating: disabled
+I (853) wifi:Init data frame dynamic rx buffer num: 32
+I (863) wifi:Init management frame dynamic rx buffer num: 32
+I (863) wifi:Init management short buffer num: 32
+I (873) wifi:Init dynamic tx buffer num: 32
+I (873) wifi:Init static rx buffer size: 1600
+I (873) wifi:Init static rx buffer num: 10
+I (883) wifi:Init dynamic rx buffer num: 32
+[0;32mI (883) wifi_init: rx ba win: 6[0m
+[0;32mI (893) wifi_init: tcpip mbox: 32[0m
+[0;32mI (893) wifi_init: udp mbox: 6[0m
+[0;32mI (893) wifi_init: tcp mbox: 6[0m
+[0;32mI (903) wifi_init: tcp tx win: 5744[0m
+[0;32mI (903) wifi_init: tcp rx win: 5744[0m
+[0;32mI (903) wifi_init: tcp mss: 1440[0m
+[0;32mI (913) wifi_init: WiFi IRAM OP enabled[0m
+[0;32mI (913) wifi_init: WiFi RX IRAM OP enabled[0m
+[0;32mI (923) phy_init: phy_version 4670,719f9f6,Feb 18 2021,17:07:07[0m
+I (1033) wifi:mode : sta (44:17:93:e6:40:74)
+I (1033) wifi:enable tsf
+I (2003) wifi:new:<9,0>, old:<1,0>, ap:<255,255>, sta:<9,0>, prof:1
+I (2713) wifi:state: init -> auth (b0)
+I (2713) wifi:state: auth -> assoc (0)
+I (2723) wifi:state: assoc -> run (10)
+W (2723) wifi:<ba-add>idx:0 (ifx:0, 54:e6:fc:be:da:b0), tid:0, ssn:0, winSize:64
+I (2733) wifi:connected with LabIoT, aid = 13, channel 9, BW20, bssid = 54:e6:fc:be:da:b0
+I (2733) wifi:security: WPA2-PSK, phy: bgn, rssi: -53
+I (2733) wifi:pm start, type: 1
+
+[0;33mW (2743) PERIPH_WIFI: WiFi Event cb, Unhandle event_base:WIFI_EVENT, event_id:4[0m
+I (2743) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+[0;32mI (3683) esp_netif_handlers: sta ip: 192.168.1.106, mask: 255.255.255.0, gw: 192.168.1.1[0m
+[0;32mI (3683) PERIPH_WIFI: Got ip:192.168.1.106[0m
+[0;32mI (3683) AudioPipeline.cpp: Event listener created[0m
+[0;32mI (3693) AudioPipeline.cpp: Listening event from all elements of pipeline[0m
+[0;32mI (3693) AudioPipeline.cpp: Listening event from peripherals[0m
+[0;32mI (3703) AUDIO_PIPELINE: link el->rb, el:0x3ffaf55c, tag:http, rb:0x3ffcd81c[0m
+[0;32mI (3713) AUDIO_PIPELINE: link el->rb, el:0x3ffc0368, tag:ogg, rb:0x3ffcd94c[0m
+
+[0;32mI (3723) WebRadio.cpp: Added URI: http://alicinotestserver:8000/labiot-radio.ogg
+                      Total URIs registered:1
+[0m
+[0;32mI (3733) AUDIO_ELEMENT: [http-0x3ffaf55c] Element task created[0m
+[0;32mI (3743) AUDIO_ELEMENT: [ogg-0x3ffc0368] Element task created[0m
+[0;32mI (3743) AUDIO_ELEMENT: [i2s-0x3ffbffe4] Element task created[0m
+[0;32mI (3753) AUDIO_PIPELINE: Func:audio_pipeline_run, Line:359, MEM Total:155372 Bytes
+[0m
+[0;32mI (3763) AUDIO_ELEMENT: [http] AEL_MSG_CMD_RESUME,state:1[0m
+[0;32mI (3773) AUDIO_ELEMENT: [ogg] AEL_MSG_CMD_RESUME,state:1[0m
+[0;32mI (3773) VORBIS_DECODER: VORBIS codec[0m
+[0;32mI (3773) CODEC_ELEMENT_HELPER: The element is 0x3ffc0368. The reserve data 2 is 0x0.[0m
+[0;32mI (3783) VORBIS_DECODER: a new song playing[0m
+[0;32mI (3793) AUDIO_ELEMENT: [i2s] AEL_MSG_CMD_RESUME,state:1[0m
+[0;32mI (3793) I2S_STREAM: AUDIO_STREAM_WRITER[0m
+[0;32mI (3803) AUDIO_PIPELINE: Pipeline started[0m
+[0;32mI (3803) Device.cpp: Initialize peripheral: set1[0m
+[0;31mE (3813) gpio: gpio_install_isr_service(449): GPIO isr service already installed[0m
+[0;32mI (3823) Device.cpp: set1 initialized[0m
+[0;32mI (3823) WebRadio.cpp: Initializing keys on board[0m
+[0;32mI (3833) gpio: GPIO[36]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:3 [0m
+[0;32mI (3833) gpio: GPIO[39]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:3 [0m
+[0;33mW (3863) PERIPH_TOUCH: _touch_init[0m
+[0;32mI (4893) HTTP_STREAM: total_bytes=0[0m
+[0;32mI (15823) MQTT.cpp: Other event id:7[0m
+[0;32mI (15853) MQTT.cpp: MQTT_EVENT_CONNECTED[0m
+[0;32mI (15853) MQTT.cpp: sent publish successful, msg_id=35039[0m
+[0;32mI (15853) MQTT.cpp: sent subscribe successful, msg_id=61911[0m
+[0;32mI (15853) MQTT.cpp: sent subscribe successful, msg_id=27927[0m
+[0;32mI (15893) MQTT.cpp: MQTT_EVENT_PUBLISHED, msg_id=35039[0m
+[0;32mI (15963) MQTT.cpp: MQTT_EVENT_SUBSCRIBED, msg_id=61911[0m
+[0;32mI (15973) MQTT.cpp: MQTT_EVENT_SUBSCRIBED, msg_id=27927[0m
+ ESP32
+Running idf_monitor in directory /Users/victoralicino/Documents/SmartSpeaker/Hardware/web_radio_v2
+Executing "/Users/victoralicino/.espressif/python_env/idf4.4_py3.10_env/bin/python /Users/victoralicino/esp/esp-idf/tools/idf_monitor.py -p /dev/cu.usbserial-1470 -b 115200 --toolchain-prefix xtensa-esp32-elf- --target esp32 --revision 0 /Users/victoralicino/Documents/SmartSpeaker/Hardware/web_radio_v2/build/SmartSpeaker.elf -m '/Users/victoralicino/.espressif/python_env/idf4.4_py3.10_env/bin/python' '/Users/victoralicino/esp/esp-idf/tools/idf.py'"...

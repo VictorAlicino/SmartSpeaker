@@ -1,0 +1,21 @@
+menu "User Defined Configurations"
+
+    config BROKER_URL
+        string "Broker URL"
+        default "mqtt://alicinotestserver:1883"
+        help
+            URL of the MQTT Server to connect to
+
+    config CONFIG_WIFI_SSID
+        string "WiFi SSID"
+        default "LabIoT"
+        help
+            WiFi SSID
+
+    config CONFIG_WIFI_PASSWORD
+            string "WiFi Password"
+            default "labiot2020."
+            help
+                WiFi Password
+
+endmenu

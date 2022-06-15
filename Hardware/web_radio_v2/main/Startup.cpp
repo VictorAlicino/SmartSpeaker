@@ -25,9 +25,6 @@ extern Device* Board;
 const char* STARTUP_TAG;
 
 esp_err_t init(esp_log_level_t level){
-    ESP_LOGI(STARTUP_TAG, "Board fullname: %s", *Board->get_full_name().c_str());
-    //esp_log_level_set("*", level);
-
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
         // NVS partition was truncated and needs to be erased
@@ -41,5 +38,6 @@ esp_err_t init(esp_log_level_t level){
 #else
     tcpip_adapter_init();
 #endif
+
     return ESP_OK;
 }

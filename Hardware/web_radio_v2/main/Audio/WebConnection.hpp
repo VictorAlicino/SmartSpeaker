@@ -12,7 +12,8 @@ class WebConnection {
 private:
     std::string ssid;
     std::string password;
-    esp_periph_set_handle_t set;
+    esp_periph_set_handle_t wifi_set;
+    bool is_started;
 
 public:
     WebConnection();

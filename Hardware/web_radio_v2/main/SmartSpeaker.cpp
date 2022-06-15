@@ -34,7 +34,7 @@ extern "C"{
 
 // Main Function
 void app_main(void){
-    Board = new Board();
+    Board = new Device();
 
     init(ESP_LOG_DEBUG);
 
@@ -51,10 +51,6 @@ void app_main(void){
 #else
     WiFi.begin("LabIoT", "labiot2020.");
 #endif //CONFIG_WIFI_SSID
-
-    ESP_LOGD(__FILENAME__, "Cheguei aqui");
-
-    WiFi.begin("LabIoT", "labiot2020.");
 
     Radio->setup_event(WiFi);
 

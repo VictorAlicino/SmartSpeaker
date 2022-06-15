@@ -8,7 +8,7 @@
 
 #include "esp_log.h"
 #include "mqtt_client.h"
-#include "Data/WebRadio.hpp"
+#include "Audio/WebRadio.hpp"
 
 const char* MQTT_TAG = __FILENAME__;
 
@@ -62,8 +62,8 @@ void MQTT::event_handler(void *handler_args, esp_event_base_t base, int32_t even
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGI(MQTT_TAG, "MQTT_EVENT_DATA");
-            strncpy_s(payload_s, event->data, event->data_len);
-            strncpy_s(topic_s, event->topic, event->topic_len);
+            strncpy(payload_s, event->data, event->data_len);
+            strncpy(topic_s, event->topic, event->topic_len);
             payload_s[event->data_len] = 0;
             topic_s[event->topic_len] = 0;
 
@@ -73,19 +73,19 @@ void MQTT::event_handler(void *handler_args, esp_event_base_t base, int32_t even
             if(strcmp(topic_s, "board") == 0){
                 if(strcmp(payload_s, "play") == 0) {
                     ESP_LOGI(MQTT_TAG, "PLAY");
-                    Radio->play();
+                    Radio->resume();
                 }
                 if(strcmp(payload_s, "pause") == 0) {
                     Radio->pause();
                     ESP_LOGI(MQTT_TAG, "PAUSE");
                 }
                 if(strcmp(payload_s, "stop") == 0) {
-                    Radio->pause();
+                    Radio->stop();
                     ESP_LOGI(MQTT_TAG, "STOP");
                 }
                 if(strcmp(payload_s, "start") == 0) {
                     Radio->restart();
-                    Radio->play();
+                    Radio->run();
                     ESP_LOGI(MQTT_TAG, "Pipeline started");
                 }
             }

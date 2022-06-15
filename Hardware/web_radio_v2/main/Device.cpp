@@ -7,6 +7,7 @@
 
 #include "esp_peripherals.h"
 #include "periph_touch.h"
+#include "esp_log.h"
 #include "periph_adc_button.h"
 #include "periph_button.h"
 
@@ -20,14 +21,13 @@ Device::Device() {
             .play = get_input_play_id(),
             .set = get_input_set_id(),
             .mode = get_input_mode_id(),
-            .rec = get_input_rec_id(),
             .volup = get_input_volup_id(),
-            .voldown = get_input_voldown_id()
-    }
-
+            .voldown = get_input_voldown_id(),
+            .rec = get_input_rec_id()
+    };
     this->led = {
-            .blue = get_blue_led_gpio(),
-            .green = get_green_led_gpio()
+            .green = get_green_led_gpio(),
+            .blue = 0,
     };
 }
 
