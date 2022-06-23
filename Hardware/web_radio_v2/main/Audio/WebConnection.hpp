@@ -19,6 +19,7 @@ public:
     WebConnection();
     void begin(const char* ssid, const char* password);
     esp_periph_set_handle_t get_set();
+    void create_server();
 
 };
 

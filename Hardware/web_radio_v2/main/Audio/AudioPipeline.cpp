@@ -63,8 +63,8 @@ esp_err_t AudioPipeline::resume() {
 }
 
 esp_err_t AudioPipeline::restart() {
-    stop();
-    audio_pipeline_run(this->pipeline);
+    //Restarting audio pipeline
+    audio_pipeline_reset_item(this->pipeline, this->i2s_stream_reader);
     return ESP_OK;
 }
 
@@ -73,16 +73,11 @@ audio_event_iface_handle_t AudioPipeline::get_evt() {
 }
 
 esp_err_t AudioPipeline::stop() {
+    //Stopping audio pipeline from ESP-ADF
     audio_pipeline_stop(this->pipeline);
     audio_pipeline_wait_for_stop(this->pipeline);
     audio_pipeline_terminate(this->pipeline);
-
-    //TODO: TERMINAR A FINALIZAÇÃO DA EXECUÇÃO
-    /*
-    for(int i=0; i>this->link_tag.size(); i++){
-        audio_pipeline_unregister(this->pipeline, )
-    }
-     */
+    audio_pipeline_remove_all(this->pipeline);
     this->pipeline_state = STOPPED;
     return ESP_OK;
 }

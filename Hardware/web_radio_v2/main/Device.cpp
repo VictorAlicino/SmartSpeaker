@@ -75,3 +75,27 @@ bool Device::is_board_button_event(audio_event_iface_msg_t &msg){
         || msg.cmd == PERIPH_ADC_BUTTON_PRESSED)) { return true; }
     else { return false; }
 }
+
+std::string Device::get_mac_address() {
+    //Get mac address out of ESP32 using ESP-IDF API
+    uint8_t mac[6];
+    esp_read_mac(mac, ESP_MAC_WIFI_STA);
+    char mac_str[18];
+    snprintf(mac_str, sizeof(mac_str), "%02x:%02x:%02x:%02x:%02x:%02x",
+            mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    return std::string(mac_str);
+}
+
+std::string Device::get_ip_address() {
+    //Get IP address out of ESP32 using ESP-IDF API
+    char ip_str[16];
+    sprintf(ip_str, IPSTR, IP2STR(&ip4_addr));
+    return std::string(ip_str);
+}
+
+std::string get_gateway() {
+    //Get gateway out of ESP32 using ESP-IDF API
+    char gw_str[16];
+    sprintf(gw_str, IPSTR, IP2STR(&gw4_addr));
+    return std::string(gw_str);
+}
