@@ -50,6 +50,9 @@ public:
     esp_periph_set_handle_t peripheral_init(std::string set_name, esp_periph_config_t config);
     esp_periph_set_handle_t get_peripheral_handle(std::string set_name);
     bool is_board_button_event(audio_event_iface_msg_t &msg);
+    std::string get_mac_address();
+    std::string get_ip_address();
+    std::string get_gateway();
 };
 
 #endif //SMART_SPEAKER_DEVICE_H

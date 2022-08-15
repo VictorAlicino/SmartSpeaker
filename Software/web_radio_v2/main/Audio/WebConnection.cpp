@@ -34,3 +34,7 @@ void WebConnection::begin(const char* ssid, const char* password) {
 esp_periph_set_handle_t WebConnection::get_set() {
     return this->wifi_set;
 }
+
+void WebConnection::create_server() {
+    periph_wifi_create_server(this->wifi_set);
+}

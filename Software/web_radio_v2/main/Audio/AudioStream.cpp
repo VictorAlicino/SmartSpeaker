@@ -33,8 +33,6 @@ AudioStream::AudioStream() {
     ogg_decoder_cfg_t ogg_cfg = DEFAULT_OGG_DECODER_CONFIG();
     this->ogg_decoder = ogg_decoder_init(&ogg_cfg);
     ESP_LOGI(__FILENAME__, "OGG decoder created");
-
-
 }
 
 audio_board_handle_t AudioStream::get_board_handle(){
