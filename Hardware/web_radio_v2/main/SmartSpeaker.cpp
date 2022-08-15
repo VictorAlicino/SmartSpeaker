@@ -4,39 +4,30 @@
 #include "MQTT.hpp"
 #include "Device.hpp"
 #include "Startup.hpp"
-// End of Project Includes
 
 // ESP-IDF Includes
 #include "sdkconfig.h"
 #include "esp_log.h"
-// End of ESP-IDF Includes
 
 // General Includes
 #include <string>
-//End of General Includes
-
-// Global Variables
-    // Nothing here
-// End of Global Variables
 
 // Global Objects
 Device* Board;
 WebRadio* Radio;
 WebConnection WiFi;
 MQTT* PubSub;
-// End of Global objects
 
 // Extern C Output
 extern "C"{
     void app_main(void);
 }
-// End of Extern C Output
 
 // Main Function
 void app_main(void){
     Board = new Device();
 
-    init(ESP_LOG_DEBUG);
+    init(ESP_LOG_DEBUG); //ESP Log initializer
 
     Radio = new WebRadio();
 
@@ -52,13 +43,9 @@ void app_main(void){
     WiFi.begin("LabIoT", "labiot2020.");
 #endif //CONFIG_WIFI_SSID
 
-    Radio->setup_event(WiFi);
-
-    Radio->link_to_pipeline(HTTP_STREAM, OGG_DECODER, I2S_STREAM);
-
-    Radio->add_uri("http://alicinotestserver:8000/labiot-radio.ogg");
-
+    Radio->setup_event(WiFi); //Setup WiFi
+    Radio->link_to_pipeline(HTTP_STREAM, OGG_DECODER, I2S_STREAM); //Build the pipeline elements in order
+    Radio->add_uri("http://alicinotestserver:8000/labiot-radio.ogg"); //Add a new Radio URI
     Radio->run();
-
     Radio->loop();
 }

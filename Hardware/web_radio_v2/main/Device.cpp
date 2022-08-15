@@ -4,7 +4,6 @@
 
 #include "Device.hpp"
 
-
 #include "esp_peripherals.h"
 #include "periph_touch.h"
 #include "esp_log.h"
@@ -16,19 +15,29 @@
 
 const char* DEVICE_TAG = __FILENAME__;
 
-Device::Device() {
-    this->button = {
-            .play = get_input_play_id(),
-            .set = get_input_set_id(),
-            .mode = get_input_mode_id(),
-            .volup = get_input_volup_id(),
-            .voldown = get_input_voldown_id(),
-            .rec = get_input_rec_id()
-    };
-    this->led = {
-            .green = get_green_led_gpio(),
-            .blue = 0,
-    };
+Device::Device(BOARD_TYPE board) {
+    if (board == LYRAT_V4_3) {
+        this->button = {
+                .play = get_input_play_id(),
+                .set = get_input_set_id(),
+                .mode = get_input_mode_id(),
+                .volup = get_input_volup_id(),
+                .voldown = get_input_voldown_id(),
+                .rec = get_input_rec_id()
+        };
+
+        this->led = {
+                .green = get_green_led_gpio(),
+                .blue = 0,
+        };
+    }
+
+    if (board == WROOM32){
+        this->led = {
+                .green = GPIO_NUM_2,
+                .blue = nullptr
+        };
+    }
 }
 
 std::string Device::get_full_name() {

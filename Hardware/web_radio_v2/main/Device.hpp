@@ -29,6 +29,11 @@ typedef struct BoardLEDIDs{
     int8_t blue;
 } BoardLEDs;
 
+enum BOARD_TYPE{
+    LYRAT_V4_3,
+    WROOM32
+};
+
 class Device{
 private:
     std::string code;
@@ -36,7 +41,7 @@ private:
     std::map<std::string, esp_periph_set_handle_t> esp_peripherals;
 
 public:
-    Device();
+    Device(BOARD_TYPE board);
     BoardButtons button;
     BoardLEDs led;
     std::string get_full_name();
