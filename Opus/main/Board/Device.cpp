@@ -7,6 +7,7 @@
 #include "esp_peripherals.h"
 #include "periph_touch.h"
 #include "esp_log.h"
+#include "esp_netif_ip_addr.h"
 #include "periph_adc_button.h"
 #include "periph_button.h"
 
@@ -35,7 +36,7 @@ Device::Device(BOARD_TYPE board) {
     if (board == WROOM32){
         this->led = {
                 .green = GPIO_NUM_2,
-                .blue = nullptr
+                .blue = GPIO_NUM_NC
         };
     }
 }
@@ -93,18 +94,4 @@ std::string Device::get_mac_address() {
     snprintf(mac_str, sizeof(mac_str), "%02x:%02x:%02x:%02x:%02x:%02x",
             mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     return std::string(mac_str);
-}
-
-std::string Device::get_ip_address() {
-    //Get IP address out of ESP32 using ESP-IDF API
-    char ip_str[16];
-    sprintf(ip_str, IPSTR, IP2STR(&ip4_addr));
-    return std::string(ip_str);
-}
-
-std::string get_gateway() {
-    //Get gateway out of ESP32 using ESP-IDF API
-    char gw_str[16];
-    sprintf(gw_str, IPSTR, IP2STR(&gw4_addr));
-    return std::string(gw_str);
 }
