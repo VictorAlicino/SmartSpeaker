@@ -20,7 +20,7 @@ extern "C" {
 
 void app_main(void){
     ESP_LOGI(MAIN_TAG, "Starting Opus");
-    if (esp32_init(ESP_LOG_INFO) != ESP_OK){
+    if (esp32_init(ESP_LOG_DEBUG) != ESP_OK){
         ESP_LOGE(MAIN_TAG, "Failed to initialize ESP32");
         ESP_LOGE(MAIN_TAG, "Halting Opus");
         return;
