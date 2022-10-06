@@ -3,7 +3,7 @@
 //
 
 #include "utils.hpp"
-#include "Device.hpp"
+#include "Board/Device.hpp"
 
 #if __has_include("esp_idf_version.h")
     #include "esp_idf_version.h"

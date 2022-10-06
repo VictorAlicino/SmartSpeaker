@@ -1,6 +1,7 @@
 // Project Includes
 #include "Board/Device.hpp"
 #include "utils.cpp"
+#include "MQTT.hpp"
 
 // ESP-IDF Includes
 #include "sdkconfig.h"
