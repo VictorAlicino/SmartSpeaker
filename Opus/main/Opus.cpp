@@ -1,7 +1,7 @@
 // Project Includes
 #include "Board/Device.hpp"
 #include "utils.cpp"
-#include "MQTT.hpp"
+#include "MQTT/MQTT_Client.hpp"
 
 // ESP-IDF Includes
 #include "sdkconfig.h"
@@ -28,5 +28,6 @@ void app_main(void){
     }
     ESP_LOGD(__FILENAME__, "ESP32 Initialized, No erros found");
 
+    MQTT_Client &MQTT = MQTT_Client::getInstance();
     Board = new Device();
 }

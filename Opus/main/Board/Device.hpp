@@ -5,6 +5,8 @@
 #ifndef SMART_SPEAKER_DEVICE_H
 #define SMART_SPEAKER_DEVICE_H
 
+//TODO: Change to singleton class
+
 #include "audio_event_iface.h"
 #include "esp_peripherals.h"
 #include "periph_touch.h"
