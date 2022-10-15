@@ -7,20 +7,18 @@
 #include <string>
 
 #include "esp_log.h"
-#include "MQTT_Client.hpp"
 
 const char* MQTT_TAG = __FILENAME__;
 
 extern WebRadio *Radio;
 
-MQTT::MQTT(std::string server_uri) {
-    const char* server_uri_c = server_uri.c_str();
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-    esp_mqtt_client_config_t mqtt_cfg = {
-            .uri = server_uri_c
-    };
-#pragma GCC diagnostic pop
+MQTT::instance = nullptr; //Defining Singleton instance as null
 
+MQTT::MQTT() {
+
+}
+
+void MQTT::init(esp_mqtt_client_config_t mqtt_cfg) {
     this->client = esp_mqtt_client_init(&mqtt_cfg);
 
     /* The last argument may be used to pass data to the event handler, in this example mqtt_event_handler */
@@ -29,7 +27,7 @@ MQTT::MQTT(std::string server_uri) {
     esp_mqtt_client_start(this->client);
 }
 
-void MQTT::event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data){
+void MQTT::_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data){
     ESP_LOGD(MQTT_TAG, "Event dispatched from event loop base=%s, event_id=%d", base, event_id);
     esp_mqtt_event_handle_t event = static_cast<esp_mqtt_event_handle_t>(event_data);
     esp_mqtt_client_handle_t client = event->client;
@@ -47,7 +45,7 @@ void MQTT::event_handler(void *handler_args, esp_event_base_t base, int32_t even
     }
 }
 
-void MQTT::mqtt_connected() {
+void MQTT::_mqtt_connected() {
     int msg_id;
     ESP_LOGI(MQTT_TAG, "MQTT Connected");
 
@@ -61,23 +59,23 @@ void MQTT::mqtt_connected() {
     ESP_LOGI(MQTT_TAG, "sent subscribe successful, msg_id=%d", msg_id);
 }
 
-void MQTT::mqtt_disconnected() {
+void MQTT::_mqtt_disconnected() {
     ESP_LOGI(MQTT_TAG, "MQTT Disconnected");
 }
 
-void MQTT::mqtt_subscribed() {
+void MQTT::_mqtt_subscribed() {
     ESP_LOGI(MQTT_TAG, "MQTT Subscribed");
 }
 
-void MQTT::mqtt_unsubscribed() {
+void MQTT::_mqtt_unsubscribed() {
     ESP_LOGI(MQTT_TAG, "MQTT Unsubscribed");
 }
 
-void MQTT::mqtt_published() {
+void MQTT::_mqtt_published() {
     ESP_LOGI(MQTT_TAG, "MQTT Published");
 }
 
-void MQTT::mqtt_data(esp_mqtt_event_handle_t event) {
+void MQTT::_mqtt_data(esp_mqtt_event_handle_t event) {
     ESP_LOGI(MQTT_TAG, "MQTT Data");
 
     if(event->topic == "volume"){
@@ -104,7 +102,7 @@ void MQTT::mqtt_data(esp_mqtt_event_handle_t event) {
     }
 }
 
-void MQTT::mqtt_error() {
+void MQTT::_mqtt_error() {
     ESP_LOGE(MQTT_TAG, "MQTT_EVENT_ERROR");
     if (event->error_handle->error_type == MQTT_ERROR_TYPE_TCP_TRANSPORT) {
         ESP_LOGI(MQTT_TAG, "Last errno string (%s)", strerror(event->error_handle->esp_transport_sock_errno));

@@ -8,61 +8,72 @@
 #include <string>
 
 #include "audio_element.h"
-#include "MQTT_Client.hpp"
 #include "board.h"
 
 class MQTT {
-protected:
-    esp_mqtt_client_handle_t client;
-public:
+private:
+    /**
+    * Class constructor
+    */
+    MQTT();
+
+    static MQTT_Client* instance; // MQTT Singleton instance
 
     /**
-     * Class constructor
-     * @param server_uri MQTT server URI
-     */
-    MQTT(std::string server_uri);
-
-    /**
-     * Event handler for MQTT events
-     */
-    void event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data);
+    * Event handler for MQTT events
+    */
+    void _event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data);
 
     /**
      * MQTT Callback when connected to server
      */
-    void mqtt_connected();
+    void _mqtt_connected();
 
     /**
      * MQTT Callback when disconnected from server
      */
-    void mqtt_disconnected();
+    void _mqtt_disconnected();
 
     /**
      * MQTT Callback when subscribed to topic
      */
-    void mqtt_subscribed();
+    void _mqtt_subscribed();
 
     /**
      * MQTT Callback when unsubscribed from topic
      */
-    void mqtt_unsubscribed();
+    void _mqtt_unsubscribed();
 
     /**
      * MQTT Callback when publish
      */
-    void mqtt_published();
+    void _mqtt_published();
 
     /**
      * MQTT Callback when data received
      * @param event MQTT event
      */
-    void mqtt_data(esp_mqtt_event_handle_t event);
+    void _mqtt_data(esp_mqtt_event_handle_t event);
 
     /**
      * MQTT Callback when an error is generated
      */
-    void mqtt_error();
+    void _mqtt_error();
 
+    esp_mqtt_client_handle_t client; // ESP-MQTT Client
+public:
+    /**
+     * MQTT get Singleton instance
+     * @return MQTT Instance
+     */
+    static MQTT &getInstance();
+
+    /**
+     * MQTT init
+     * @param mqtt_cfg ESP-MQTT Client Config struct
+     */
+    void init(esp_mqtt_client_config_t mqtt_cfg);
+    void de_init();
 };
 
 #endif //SMART_SPEAKER_MQTT_H
