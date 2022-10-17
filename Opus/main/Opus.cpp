@@ -27,6 +27,5 @@ void app_main(void){
     }
     ESP_LOGD(__FILENAME__, "ESP32 Initialized, No erros found");
 
-    MQTT_Client &MQTT = MQTT_Client::getInstance();
-    Board = new Device();
+    Board = new Device(LYRAT_V4_3);
 }
