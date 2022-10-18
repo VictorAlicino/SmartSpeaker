@@ -39,6 +39,8 @@ Device::Device(BOARD_TYPE board) {
                 .blue = GPIO_NUM_NC
         };
     }
+
+    //TODO: initialize the board name
 }
 
 std::string Device::get_full_name() {

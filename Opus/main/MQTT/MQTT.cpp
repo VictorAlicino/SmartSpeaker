@@ -10,6 +10,8 @@
 
 const char* MQTT_TAG = __FILENAME__;
 
+//TODO: Check for possible erros in here
+
 //extern WebRadio *Radio;
 
 MQTT* MQTT::instance = nullptr; //Defining Singleton instance as null
@@ -26,9 +28,11 @@ MQTT* MQTT::getInstance() {
 
 void MQTT::init(void (*event_handler)(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data),
                 const char *uri) {
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
     esp_mqtt_client_config_t mqtt_cfg = {
             .uri = uri,
     };
+#pragma GCC diagnostic pop
     this->client = esp_mqtt_client_init(&mqtt_cfg);
 
     /* The last argument may be used to pass data to the event handler, in this example mqtt_event_handler */
@@ -40,6 +44,5 @@ void MQTT::init(void (*event_handler)(void *handler_args, esp_event_base_t base,
 void MQTT::de_init() {
     esp_mqtt_client_stop(this->client);
     esp_mqtt_client_destroy(this->client);
-
     delete this->instance;
 }

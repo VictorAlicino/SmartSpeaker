@@ -35,7 +35,7 @@ public:
               const char *uri);
 
     /**
-     * MQTT de init
+     * MQTT de-init
      */
     void de_init();
 
