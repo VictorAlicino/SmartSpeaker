@@ -17,7 +17,6 @@ extern "C" {
     void app_main(void);
 }
 
-
 void app_main(void){
     ESP_LOGI(MAIN_TAG, "Starting Opus");
 
@@ -31,4 +30,6 @@ void app_main(void){
 
     Board = new Device(LYRAT_V4_3);
     ESP_LOGD(__FILENAME__, "Starting Opus firmware to %s", Board->get_name().c_str());
+
+    //TODO: AudioPipeline
 }

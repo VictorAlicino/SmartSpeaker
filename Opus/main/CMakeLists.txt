@@ -4,4 +4,5 @@ idf_component_register(SRCS
         "Board/Device.cpp"
         "MQTT/MQTT.cpp"
         "MQTT/MQTTHandler.cpp"
+        "AudioPipeline/AudioPipeline.cpp"
                     INCLUDE_DIRS ".")

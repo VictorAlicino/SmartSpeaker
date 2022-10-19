@@ -16,8 +16,7 @@ const char* MQTT_TAG = __FILENAME__;
 
 MQTT* MQTT::instance = nullptr; //Defining Singleton instance as null
 
-MQTT::MQTT() {
-}
+MQTT::MQTT() {}
 
 MQTT* MQTT::getInstance() {
     if (instance == nullptr) {
