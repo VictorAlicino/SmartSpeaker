@@ -47,7 +47,7 @@ private:
 
 public:
     /**
-     * Class constructor
+     * @brief       Class constructor
      * @param board Board model
      */
     Device(BOARD_TYPE board);

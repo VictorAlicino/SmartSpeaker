@@ -14,7 +14,7 @@
 class MQTT {
 private:
     /**
-    * Class constructor
+    * @brief    Class constructor
     */
     MQTT();
 
@@ -22,20 +22,20 @@ private:
 
 public:
     /**
-     * MQTT get Singleton instance
+     * @brief   MQTT get Singleton instance
      * @return MQTT Instance
      */
     static MQTT* getInstance();
 
     /**
-     * MQTT client
+     * @brief   MQTT client
      * @param event_handler Class specific MQTT event handler
      */
     void init(void (*event_handler)(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data),
               const char *uri);
 
     /**
-     * MQTT de-init
+     * @brief   MQTT de-init
      */
     void de_init();
 

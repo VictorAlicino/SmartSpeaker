@@ -10,7 +10,7 @@
 
 //TODO: Finish the documentation
 /**
- * Handler main function
+ * @brief Handler main function
  * @param handler_args
  * @param base
  * @param event_id
@@ -19,7 +19,6 @@
 void _event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data);
 
 /**
- * MQTT Handler class
  * @brief This class is a wrapper for the ESP-MQTT library, for more details in its usage please refer to the ESP-MQTT
  * library documentation on:
  * https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/protocols/mqtt.html
@@ -27,66 +26,68 @@ void _event_handler(void *handler_args, esp_event_base_t base, int32_t event_id,
 class MQTTHandler {
 public:
     /**
-     * MQTT Callback, called when the client has successfully established a connection to the broker.
-     * The client is now ready to send and receive data.
+     * @brief   MQTT Callback, called when the client has successfully established a connection to the broker.
+     *          The client is now ready to send and receive data.
      */
     void _mqtt_connected();
 
     /**
-     * MQTT Callback, called when the client has aborted the connection due to being unable to read or write data,
-     * e.g. because the server is unavailable.
+     * @brief   MQTT Callback, called when the client has aborted the connection due to being unable to read or write
+     *          data, e.g. because the server is unavailable.
      */
     void _mqtt_disconnected();
 
     /**
-     * MQTT Callback, called when the broker has acknowledged the client’s subscribe request.
-     * The event data will contain the message ID of the subscribe message.
+     * @brief   MQTT Callback, called when the broker has acknowledged the client’s subscribe request.
+     *          The event data will contain the message ID of the subscribe message.
      */
     void _mqtt_subscribed();
 
     /**
-     * MQTT Callback, called when the broker has acknowledged the client’s unsubscribe request.
-     * The event data will contain the message ID of the unsubscribe message.
+     * @brief   MQTT Callback, called when the broker has acknowledged the client’s unsubscribe request.
+     *          The event data will contain the message ID of the unsubscribe message.
      */
     void _mqtt_unsubscribed();
 
     /**
-     * MQTT Callback, called when the broker has acknowledged the client’s publish message.
-     * This will only be posted for Quality of Service level 1 and 2, as level 0 does not use acknowledgements.
-     * The event data will contain the message ID of the publish message.
+     * @brief   MQTT Callback, called when the broker has acknowledged the client’s publish message.
+     *          This will only be posted for Quality of Service level 1 and 2, as level 0 does not use acknowledgements.
+     *          The event data will contain the message ID of the publish message.
      */
     void _mqtt_published();
 
     /**
-     * MQTT Callback, called when the client has received a publish message.
-     * The event data contains: message ID, name of the topic it was published to, received data and its length.
-     * For data that exceeds the internal buffer multiple MQTT_EVENT_DATA will be posted and current_data_offset and
-     * total_data_len from event data updated to keep track of the fragmented message.
+     * @brief   MQTT Callback, called when the client has received a publish message.
+     *          The event data contains: message ID, name of the topic it was published to,
+     *          received data and its length. For data that exceeds the internal buffer multiple MQTT_EVENT_DATA will
+     *          be posted and current_data_offset and total_data_len from event data updated to keep track of the
+     *          fragmented message.
      * @param event MQTT event
      */
     void _mqtt_data(esp_mqtt_event_handle_t event);
 
     /**
-     * MQTT Callback, called when the client has encountered an error.
+     * @brief   MQTT Callback, called when the client has encountered an error.
      */
     void _mqtt_error(esp_mqtt_event_handle_t event);
 
     /**
-     * Publish data to topic
-     * @param topic Topic to publish to
-     * @param data Data to publish
-     * @param len Length of data
-     * @param qos Quality of service level
-     * @param retain Retain flag
-     * @return message_id of the publish message (for QoS 0 message_id will always be zero) on success. -1 on failure.
+     * @brief           Publish data to topic
+     * @param topic     Topic to publish to
+     * @param data      Data to publish
+     * @param len       Length of data
+     * @param qos       Quality of service level
+     * @param retain    Retain flag
+     * @return          message_id of the publish message (for QoS 0 message_id will always be zero) on success.
+     *                  -1 on failure.
      */
     static int publish(const char *topic, const char *data, int len, int qos, int retain);
 
     /**
-     * Subscribe to topic
+     * @brief       Subscribe to topic
      * @param topic Topic to subscribe to
-     * @param qos Quality of service level
-     * @return message_id of the subscribe message on success. -1 on failure.
+     * @param qos   Quality of service level
+     * @return      message_id of the subscribe message on success. -1 on failure.
      */
     static int subscribe(const char *topic, int qos);
 };
