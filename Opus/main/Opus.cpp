@@ -32,4 +32,5 @@ void app_main(void){
     ESP_LOGD(__FILENAME__, "Starting Opus firmware to %s", Board->get_name().c_str());
 
     //TODO: AudioPipeline
+
 }

@@ -21,17 +21,24 @@ typedef enum {
     AP_STATE_ERROR,
 } audio_pipeline_state_t;
 
+typedef enum {
+
+} is_pipeeline_blocked_t;
+
 class AudioPipeline {
 private:
     //Pipeline
     audio_pipeline_state_t pipeline_state;
     audio_pipeline_handle_t pipeline;
 
+
     //Event handlers
     audio_event_iface_handle_t evt;
 
     //Singleton
     AudioPipeline();
+
+
 
 public:
     //Get instance
