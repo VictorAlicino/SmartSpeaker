@@ -43,6 +43,15 @@ Device::Device(BOARD_TYPE board) {
     //TODO: initialize the board name
 }
 
+Device* Device::instance = nullptr;
+
+Device* Device::getInstance(BOARD_TYPE board) {
+    if (instance == nullptr) {
+        instance = new Device(board);
+    }
+    return instance;
+}
+
 std::string Device::get_full_name() {
     std::string full_name;
     full_name = this->name + " (" + 
@@ -58,22 +67,15 @@ std::string Device::get_code() {
     return this->code;
 }
 
-esp_periph_set_handle_t Device::peripheral_init(std::string set_name, esp_periph_config_t config){
-    ESP_LOGI(DEVICE_TAG, "Initialize peripheral: %s", set_name.c_str());
-    esp_periph_set_handle_t set = esp_periph_set_init(&config);
-
-    this->esp_peripherals[set_name] = set;
-    ESP_LOGI(DEVICE_TAG, "%s initialized", set_name.c_str());
-
-    return set;
+esp_periph_set_handle_t Device::peripherals_init(esp_periph_config_t config){
+    ESP_LOGI(DEVICE_TAG, "Initializing peripherals");
+    esp_periph_set_handle_t this->peripherals_handle = esp_periph_set_init(&config);
+    ESP_LOGD(DEVICE_TAG, "Peripherals initialized");
+    return this->peripherals_handle;
 }
 
 esp_periph_set_handle_t Device::get_peripheral_handle(std::string set_name) {
-    auto it = this->esp_peripherals.find(set_name);
-    if(it->first != set_name){
-        throw std::invalid_argument("Provided set name does not match with initialized sets");
-    }
-    return it->second;
+    return this->peripherals_handle;
 }
 
 bool Device::is_board_button_event(audio_event_iface_msg_t &msg){

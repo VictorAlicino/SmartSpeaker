@@ -22,8 +22,8 @@ typedef enum {
 } audio_pipeline_state_t;
 
 typedef enum {
-
-} is_pipeeline_blocked_t;
+    //TODO: Add more states
+} is_pipeline_blocked_t;
 
 class AudioPipeline {
 private:
@@ -31,24 +31,25 @@ private:
     audio_pipeline_state_t pipeline_state;
     audio_pipeline_handle_t pipeline;
 
-
-    //Event handlers
+    //Event Interface API
     audio_event_iface_handle_t evt;
 
-    //Singleton
-    AudioPipeline();
-
-
-
 public:
-    //Get instance
-    static AudioPipeline &getInstance();
+    AudioPipeline();
 
     /**
      * @brief Register an element to the pipeline
      * @param element Element to register
      */
     void register_element(audio_element_handle_t element);
+
+    void run();
+    void pause();
+    void resume();
+    void restart();
+    void stop();
+
+    //TODO: Add method to link audio elements
 };
 
 

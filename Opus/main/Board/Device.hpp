@@ -43,18 +43,28 @@ class Device{
 private:
     std::string code;
     std::string name;
-    std::map<std::string, esp_periph_set_handle_t> esp_peripherals;
+    esp_periph_set_handle_t peripherals_handle;
 
-public:
+    // Singleton instance
+    static Device* instance;
+
     /**
      * @brief       Class constructor
      * @param board Board model
      */
     Device(BOARD_TYPE board);
 
+public:
     // Public variables
     BoardButtons button;
     BoardLEDs led;
+
+    /**
+     * @brief       Get the singleton instance
+     * @param board Board model
+     * @return      Device instance
+     */
+    static Device* get_instance(BOARD_TYPE board);
 
     /**
      * Get the full name of the board
@@ -80,14 +90,13 @@ public:
      * @param config Peripheral configuration
      * @return The peripheral sets instance
      */
-    esp_periph_set_handle_t peripheral_init(std::string set_name, esp_periph_config_t config);
+    esp_periph_set_handle_t peripherals_init(esp_periph_config_t config);
 
     /**
-     * Get the peripheral set instance
-     * @param set_name Peripheral set instance name
-     * @return The peripheral sets instance
+     * Get the peripherals set handle
+     * @return The peripheral set handle
      */
-    esp_periph_set_handle_t get_peripheral_handle(std::string set_name);
+    esp_periph_set_handle_t get_peripheral_handle();
 
     /**
      * Checks if event from iface is a button press
