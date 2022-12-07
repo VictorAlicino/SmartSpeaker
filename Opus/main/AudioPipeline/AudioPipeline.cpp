@@ -26,7 +26,7 @@ AudioPipeline &AudioPipeline::getInstance() {
 
 AudioPipeline::AudioPipeline() {
     ESP_LOGD(__FILENAME__, "Opus -> Creating Audio Pipeline");
-    audio_pipeline_cfg_t pipeline_cfg = DEFAULT_AUDIO_PIPELINE_CONFIG();
+    audio_pipeline_cfg_t pipeline_cfg = DEFAULT_AUDIO_PIPELINE_CONFIG(); // ESP-ADF Macro | Default pipeline config
     this->pipeline = audio_pipeline_init(&pipeline_cfg);
     if(this->pipeline != (void*) 0){
         ESP_LOGD(PIPELINE_TAG, "Opus -> Audio Pipeline created");
