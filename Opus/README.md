@@ -8,7 +8,7 @@ The Smart Speaker has to be able to do the following:
 * Play music from online source 
 
 ## TODO Implement
-* [ ] Connect to Wi-Fi
+* [x] Connect to Wi-Fi
 * [ ] Broadcast via Bluetooth
 * [ ] Pipeline class
 * [ ] Down-mix class
