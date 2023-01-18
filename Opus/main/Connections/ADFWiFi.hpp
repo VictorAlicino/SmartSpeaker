@@ -27,7 +27,7 @@ public:
      * @brief Get singleton instance
      * @return Singleton instance
      */
-    static ADFWiFi* getInstance();
+    static ADFWiFi* get_instance();
 
     /**
      * @brief Connect to WiFi

@@ -2,7 +2,7 @@
 // Created by Victor Alicino on 11/01/23.
 //
 
-#include "ADFWiFi.h"
+#include "ADFWiFi.hpp"
 
 #include "esp_netif.h"
 #include "esp_log.h"
@@ -21,7 +21,7 @@ ADFWiFi::ADFWiFi() {
     this->password = nullptr;
 }
 
-ADFWiFi* ADFWiFi::getInstance() {
+ADFWiFi* ADFWiFi::get_instance() {
     if (instance == nullptr) {
         instance = new ADFWiFi();
     }
