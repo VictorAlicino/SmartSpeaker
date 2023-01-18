@@ -52,7 +52,7 @@ private:
      * @brief       Class constructor
      * @param board Board model
      */
-    Device(BOARD_TYPE board);
+    Device(BOARD_TYPE board = BOARD_TYPE::LYRAT_V4_3);
 
 public:
     // Public variables

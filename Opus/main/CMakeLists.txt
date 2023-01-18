@@ -5,4 +5,6 @@ idf_component_register(SRCS
         "MQTT/MQTT.cpp"
         "MQTT/MQTTHandler.cpp"
         "AudioPipeline/AudioPipeline.cpp"
+        "Connections/A2DP_HF.cpp"
+        "Connections/ADFWiFi.cpp"
                     INCLUDE_DIRS ".")

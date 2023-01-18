@@ -1,13 +1,14 @@
+// ESP-IDF/ADF Includes
+#include "sdkconfig.h"
+#include "esp_log.h"
+#include "bluetooth_service.h"
+
 // Project Includes
 #include "Board/Device.hpp"
 #include "utils.cpp"
+#include "Connections/A2DP_HF.hpp"
+#include "Connections/ADFWiFi.hpp"
 
-// ESP-IDF Includes
-#include "sdkconfig.h"
-#include "esp_log.h"
-
-// Global Objects
-Device* Board;
 
 // Global Variables
 const char* MAIN_TAG = __FILENAME__;
@@ -28,8 +29,17 @@ void app_main(void){
     }
     ESP_LOGD(__FILENAME__, "ESP32 Initialized, No erros found");
 
-    Board = new Device(LYRAT_V4_3);
+    Device* Board = Device::get_instance(BOARD_TYPE::LYRAT_V4_3);
     ESP_LOGD(__FILENAME__, "Starting Opus firmware to %s", Board->get_name().c_str());
+
+    // Initialize WiFi
+    ADFWiFi* WiFi = ADFWiFi::get_instance();
+    WiFi->connect_to_wifi("whatever", "whatever");
+
+    // Initialize Bluetooth
+    A2DP_HF* bluetooth = A2DP_HF::get_instance();
+    bluetooth.config("Opus", nullptr, BLUETOOTH_A2DP_SINK);
+    bluetooth.init();
 
     //TODO: AudioPipeline
 

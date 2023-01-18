@@ -27,6 +27,12 @@ typedef enum {
 
 class AudioPipeline {
 private:
+
+    AudioPipeline();
+
+    //Singleton instance
+    static AudioPipeline* instance;
+
     //Pipeline
     audio_pipeline_state_t pipeline_state;
     audio_pipeline_handle_t pipeline;
@@ -35,7 +41,11 @@ private:
     audio_event_iface_handle_t evt;
 
 public:
-    AudioPipeline();
+    /**
+     * @brief   AudioPipeline get Singleton instance
+     * @return AudioPipeline Instance
+     */
+    static AudioPipeline* get_instance();
 
     /**
      * @brief Register an element to the pipeline

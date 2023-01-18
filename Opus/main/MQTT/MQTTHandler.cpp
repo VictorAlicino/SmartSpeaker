@@ -34,7 +34,7 @@ void MQTTHandler::_mqtt_connected() {
     int msg_id;
     ESP_LOGI(MQTT_TAG, "MQTT Connected");
 
-    esp_mqtt_client_handle_t client = MQTT::getInstance()->client;
+    esp_mqtt_client_handle_t client = MQTT::get_instance()->client;
 
     msg_id = MQTTHandler::publish("board", "LyraT Ativado", 0, 1, 0);
     ESP_LOGI(MQTT_TAG, "MQTT -> sent publish successful, msg_id=%d", msg_id);
@@ -96,14 +96,14 @@ void MQTTHandler::_mqtt_error(esp_mqtt_event_handle_t event) {
 }
 
 int MQTTHandler::publish(const char *topic, const char *data, int len, int qos, int retain) {
-    esp_mqtt_client_handle_t client = MQTT::getInstance()->client;
+    esp_mqtt_client_handle_t client = MQTT::get_instance()->client;
     int msg_id = esp_mqtt_client_publish(client, topic, data, len, qos, retain);
     ESP_LOGI(MQTT_TAG, "sent publish successful, msg_id=%d", msg_id);
     return msg_id;
 }
 
 int MQTTHandler::subscribe(const char *topic, int qos) {
-    esp_mqtt_client_handle_t client = MQTT::getInstance()->client;
+    esp_mqtt_client_handle_t client = MQTT::get_instance()->client;
     int msg_id = esp_mqtt_client_subscribe(client, topic, qos);
     ESP_LOGI(MQTT_TAG, "OPUS is subscribed to topic %s; MSG_ID=%d", topic, msg_id);
     return msg_id;

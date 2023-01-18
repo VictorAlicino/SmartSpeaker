@@ -28,7 +28,7 @@ ADFWiFi* ADFWiFi::get_instance() {
     return instance;
 }
 
-esp_err_t ADFWiFi::connect_to_wifi(string ssid, string password) {
+esp_err_t ADFWiFi::connect_to_wifi(std::string ssid, std::string password) {
     esp_err_t err = ESP_OK;
     ESP_LOGI(TAG, "Initializing WiFi");
     err = esp_netif_init(); //Initialize the underlying TCP/IP stack

@@ -25,7 +25,7 @@ public:
      * @brief   MQTT get Singleton instance
      * @return MQTT Instance
      */
-    static MQTT* getInstance();
+    static MQTT* get_instance();
 
     /**
      * @brief   MQTT client

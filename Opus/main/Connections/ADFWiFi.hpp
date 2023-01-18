@@ -14,8 +14,8 @@ private:
     //Singleton instance
     static ADFWiFi* instance;
 
-    string ssid;
-    string password;
+    std::string ssid;
+    std::string password;
 
     /**
      * @brief Class constructor
@@ -35,7 +35,7 @@ public:
      * @param password WiFi password
      * @return ESP_OK if successful
      */
-    esp_err_t connect_to_wifi(string ssid, string password);
+    esp_err_t connect_to_wifi(std::string ssid, std::string password);
 
 };
 

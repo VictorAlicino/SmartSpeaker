@@ -18,7 +18,7 @@ MQTT* MQTT::instance = nullptr; //Defining Singleton instance as null
 
 MQTT::MQTT() {}
 
-MQTT* MQTT::getInstance() {
+MQTT* MQTT::get_instance() {
     if (instance == nullptr) {
         instance = new MQTT();
     }

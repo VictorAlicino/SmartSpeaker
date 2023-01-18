@@ -18,9 +18,13 @@
 
 static const char *PIPELINE_TAG = __FILENAME__;
 
+AudioPipeline* AudioPipeline::instance = nullptr;
+
 //Singleton get instance
-AudioPipeline &AudioPipeline::getInstance() {
-    static AudioPipeline instance;
+AudioPipeline* AudioPipeline::get_instance() {
+    if (instance == nullptr){
+        instance = new AudioPipeline();
+    }
     return instance;
 };
 
@@ -55,7 +59,7 @@ AudioPipeline::AudioPipeline() {
         throw std::runtime_error("Failed to link Event Listener to Pipeline");
     }
 
-    Device *Board = Device::getInstance();
+    Device *Board = Device::get_instance(BOARD_TYPE::LYRAT_V4_3);
     err = audio_event_iface_set_listener(
             Board->get_peripheral_handle(),
             this->evt);

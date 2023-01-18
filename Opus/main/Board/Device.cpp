@@ -45,7 +45,7 @@ Device::Device(BOARD_TYPE board) {
 
 Device* Device::instance = nullptr;
 
-Device* Device::getInstance(BOARD_TYPE board) {
+Device* Device::get_instance(BOARD_TYPE board = BOARD_TYPE::LYRAT_V4_3) {
     if (instance == nullptr) {
         instance = new Device(board);
     }
@@ -69,12 +69,12 @@ std::string Device::get_code() {
 
 esp_periph_set_handle_t Device::peripherals_init(esp_periph_config_t config){
     ESP_LOGI(DEVICE_TAG, "Initializing peripherals");
-    esp_periph_set_handle_t this->peripherals_handle = esp_periph_set_init(&config);
+    this->peripherals_handle = esp_periph_set_init(&config);
     ESP_LOGD(DEVICE_TAG, "Peripherals initialized");
     return this->peripherals_handle;
 }
 
-esp_periph_set_handle_t Device::get_peripheral_handle(std::string set_name) {
+esp_periph_set_handle_t Device::get_peripheral_handle() {
     return this->peripherals_handle;
 }
 
