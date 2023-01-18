@@ -1,4 +1,7 @@
 // ESP-IDF/ADF Includes
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
 #include "sdkconfig.h"
 #include "esp_log.h"
 #include "bluetooth_service.h"
@@ -38,8 +41,8 @@ void app_main(void){
 
     // Initialize Bluetooth
     A2DP_HF* bluetooth = A2DP_HF::get_instance();
-    bluetooth.config("Opus", nullptr, BLUETOOTH_A2DP_SINK);
-    bluetooth.init();
+    bluetooth->config("Opus", BLUETOOTH_A2DP_SINK);
+    bluetooth->init();
 
     //TODO: AudioPipeline
 

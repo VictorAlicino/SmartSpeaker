@@ -5,6 +5,10 @@
 #ifndef SMARTSPEAKER_A2DP_HF_HPP
 #define SMARTSPEAKER_A2DP_HF_HPP
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/event_groups.h"
+
 #include "bluetooth_service.h"
 #include "esp_bt_defs.h"
 #include "esp_gap_bt_api.h"
@@ -27,7 +31,6 @@ public:
     static A2DP_HF* get_instance();
 
     void config(std::string device_name,
-                std::string remote_name,
                 bluetooth_service_mode_t mode);
 
     void init();
