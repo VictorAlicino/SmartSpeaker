@@ -40,9 +40,9 @@ void app_main(void){
     WiFi->connect_to_wifi("whatever", "whatever");
 
     // Initialize Bluetooth
-    A2DP_HF* bluetooth = A2DP_HF::get_instance();
-    bluetooth->config("Opus", BLUETOOTH_A2DP_SINK);
-    bluetooth->init();
+    A2DP_HF* bt_a2dp_hf = A2DP_HF::get_instance();
+    bt_a2dp_hf->config("Opus", BLUETOOTH_A2DP_SINK);
+    bt_a2dp_hf->init();
 
     //TODO: AudioPipeline
 

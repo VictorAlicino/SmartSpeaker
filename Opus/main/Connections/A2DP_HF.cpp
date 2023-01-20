@@ -12,10 +12,16 @@
 #include "esp_hf_client_api.h"
 #include "bluetooth_service.h"
 #include "esp_log.h"
+#include "audio_mem.h"
 
 #include "connections_macros.h"
 
 #include <string>
+#include <cstring>
+
+#define HFP_RESAMPLE_RATE 16000
+
+static bool is_get_hfp = true;
 
 const char* A2DP_HF_TAG = __FILENAME__;
 
@@ -51,6 +57,63 @@ void A2DP_HF::init(){
     bluetooth_service_start(&this->bt_cfg);
     esp_hf_client_register_callback(bluetooth_service_hf_client_cb);
     esp_hf_client_init();
+}
+
+static void bt_app_hf_client_audio_open(void)
+{
+    ESP_LOGE(A2DP_HF_TAG, "bt_app_hf_client_audio_open");
+    int sample_rate = HFP_RESAMPLE_RATE;
+    audio_element_info_t bt_info = {0};
+    audio_element_getinfo(bt_stream_reader, &bt_info);
+    bt_info.sample_rates = sample_rate;
+    bt_info.channels = 1;
+    bt_info.bits = 16;
+    audio_element_setinfo(bt_stream_reader, &bt_info);
+    audio_element_report_info(bt_stream_reader);
+}
+
+static void bt_app_hf_client_audio_close(void)
+{
+    ESP_LOGE(A2DP_HF_TAG, "bt_app_hf_client_audio_close");
+    int sample_rate = periph_bluetooth_get_a2dp_sample_rate();
+    audio_element_info_t bt_info = {0};
+    audio_element_getinfo(bt_stream_reader, &bt_info);
+    bt_info.sample_rates = sample_rate;
+    bt_info.channels = 2;
+    bt_info.bits = 16;
+    audio_element_setinfo(bt_stream_reader, &bt_info);
+    audio_element_report_info(bt_stream_reader);
+}
+
+static uint32_t bt_app_hf_client_outgoing_cb(uint8_t *p_buf, uint32_t sz)
+{
+    int out_len_bytes = 0;
+    char *enc_buffer = (char *)audio_malloc(sz);
+    AUDIO_MEM_CHECK(A2DP_HF_TAG, enc_buffer, return 0);
+    if (is_get_hfp) {
+        out_len_bytes = raw_stream_read(raw_read, enc_buffer, sz);
+    }
+
+    if (out_len_bytes == sz) {
+        is_get_hfp = false;
+        memcpy(p_buf, enc_buffer, out_len_bytes);
+        free(enc_buffer);
+        return sz;
+    } else {
+        is_get_hfp = true;
+        free(enc_buffer);
+        return 0;
+    }
+}
+
+static void bt_app_hf_client_incoming_cb(const uint8_t *buf, uint32_t sz)
+{
+    if (bt_stream_reader) {
+        if (audio_element_get_state(bt_stream_reader) == AEL_STATE_RUNNING) {
+            audio_element_output(bt_stream_reader, (char *)buf, sz);
+            esp_hf_client_outgoing_data_ready();
+        }
+    }
 }
 
 void bluetooth_service_hf_client_cb(esp_hf_client_cb_event_t event, esp_hf_client_cb_param_t *param) {/* callback for HF_CLIENT */

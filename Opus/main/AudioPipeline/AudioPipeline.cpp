@@ -59,7 +59,7 @@ AudioPipeline::AudioPipeline() {
         throw std::runtime_error("Failed to link Event Listener to Pipeline");
     }
 
-    Device *Board = Device::get_instance(BOARD_TYPE::LYRAT_V4_3);
+    /*Device *Board = Device::get_instance(BOARD_TYPE::LYRAT_V4_3);
     err = audio_event_iface_set_listener(
             Board->get_peripheral_handle(),
             this->evt);
@@ -68,6 +68,5 @@ AudioPipeline::AudioPipeline() {
     } else {
         ESP_LOGE(PIPELINE_TAG, "Opus -> Failed to link Event Listener to Peripherals");
         throw std::runtime_error("Failed to link Event Listener to Peripherals");
-    }
-
+    }*/
 }
