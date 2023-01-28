@@ -13,6 +13,7 @@
 #include "esp_bt_defs.h"
 #include "esp_gap_bt_api.h"
 #include "esp_hf_client_api.h"
+#include "raw_stream.h"
 #include <string>
 
 
@@ -25,6 +26,8 @@ private:
 
     static A2DP_HF* instance; // A2DP_HF Singleton instance
     bluetooth_service_cfg_t bt_cfg; // Bluetooth service config
+    audio_element_handle_t bt_stream_reader; // Bluetooth stream reader
+    audio_element_handle_t raw_read; // Raw reader
 
 
 public:
@@ -34,6 +37,12 @@ public:
                 bluetooth_service_mode_t mode);
 
     void init();
+
+    esp_err_t bt_stream_reader_init();
+    esp_err_t raw_read_init();
+
+    audio_element_handle_t get_bt_stream_reader();
+    audio_element_handle_t get_raw_read();
 
 };
 

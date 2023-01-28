@@ -32,6 +32,7 @@ void app_main(void){
     }
     ESP_LOGD(__FILENAME__, "ESP32 Initialized, No erros found");
 
+    // Initialize Board
     Device* Board = Device::get_instance(BOARD_TYPE::LYRAT_V4_3);
     ESP_LOGD(__FILENAME__, "Starting Opus firmware to %s", Board->get_name().c_str());
 

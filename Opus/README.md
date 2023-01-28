@@ -9,7 +9,7 @@ The Smart Speaker has to be able to do the following:
 
 ## TODO Implement
 * [x] Connect to Wi-Fi
-* [ ] Broadcast via Bluetooth
+* [x] Broadcast via Bluetooth
 * [ ] Pipeline class
 * [ ] Down-mix class
 * [ ] Play music from Bluetooth devices

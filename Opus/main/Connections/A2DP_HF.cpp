@@ -13,7 +13,7 @@
 #include "bluetooth_service.h"
 #include "esp_log.h"
 #include "audio_mem.h"
-
+#include "raw_stream.h"
 #include "connections_macros.h"
 
 #include <string>
@@ -57,10 +57,47 @@ void A2DP_HF::init(){
     bluetooth_service_start(&this->bt_cfg);
     esp_hf_client_register_callback(bluetooth_service_hf_client_cb);
     esp_hf_client_init();
+    this->bt_stream_reader = nullptr;
+    this->raw_read = nullptr;
+}
+
+esp_err_t A2DP_HF::bt_stream_reader_init(){
+    if (this->bt_stream_reader == nullptr) {
+        this->bt_stream_reader = bluetooth_service_create_stream();
+        if (this->bt_stream_reader == NULL) {
+            ESP_LOGE(A2DP_HF_TAG, "Bluetooth stream reader create failed");
+            return ESP_FAIL;
+        }
+    }
+    return ESP_OK;
+}
+
+esp_err_t A2DP_HF::raw_read_init(){
+    if (this->raw_read == nullptr) {
+        raw_stream_cfg_t raw_cfg = RAW_STREAM_CFG_DEFAULT();
+        raw_cfg.type = AUDIO_STREAM_READER;
+        this->raw_read = raw_stream_init(&raw_cfg);
+        if (this->raw_read == NULL) {
+            ESP_LOGE(A2DP_HF_TAG, "Raw stream reader create failed");
+            return ESP_FAIL;
+        }
+    }
+    return ESP_OK;
+}
+
+audio_element_handle_t A2DP_HF::get_bt_stream_reader(){
+    return this->bt_stream_reader;
+}
+
+audio_element_handle_t A2DP_HF::get_raw_read(){
+    return this->raw_read;
 }
 
 static void bt_app_hf_client_audio_open(void)
 {
+    A2DP_HF* a2dp_hf = A2DP_HF::get_instance();
+    audio_element_handle_t bt_stream_reader = a2dp_hf->get_bt_stream_reader();
+
     ESP_LOGE(A2DP_HF_TAG, "bt_app_hf_client_audio_open");
     int sample_rate = HFP_RESAMPLE_RATE;
     audio_element_info_t bt_info = {0};
@@ -74,6 +111,9 @@ static void bt_app_hf_client_audio_open(void)
 
 static void bt_app_hf_client_audio_close(void)
 {
+    A2DP_HF* a2dp_hf = A2DP_HF::get_instance();
+    audio_element_handle_t bt_stream_reader = a2dp_hf->get_bt_stream_reader();
+
     ESP_LOGE(A2DP_HF_TAG, "bt_app_hf_client_audio_close");
     int sample_rate = periph_bluetooth_get_a2dp_sample_rate();
     audio_element_info_t bt_info = {0};
@@ -87,6 +127,9 @@ static void bt_app_hf_client_audio_close(void)
 
 static uint32_t bt_app_hf_client_outgoing_cb(uint8_t *p_buf, uint32_t sz)
 {
+    A2DP_HF* a2dp_hf = A2DP_HF::get_instance();
+    audio_element_handle_t raw_read = a2dp_hf->get_raw_read();
+
     int out_len_bytes = 0;
     char *enc_buffer = (char *)audio_malloc(sz);
     AUDIO_MEM_CHECK(A2DP_HF_TAG, enc_buffer, return 0);
@@ -108,6 +151,9 @@ static uint32_t bt_app_hf_client_outgoing_cb(uint8_t *p_buf, uint32_t sz)
 
 static void bt_app_hf_client_incoming_cb(const uint8_t *buf, uint32_t sz)
 {
+    A2DP_HF* a2dp_hf = A2DP_HF::get_instance();
+    audio_element_handle_t bt_stream_reader = a2dp_hf->get_bt_stream_reader();
+
     if (bt_stream_reader) {
         if (audio_element_get_state(bt_stream_reader) == AEL_STATE_RUNNING) {
             audio_element_output(bt_stream_reader, (char *)buf, sz);
@@ -227,3 +273,4 @@ void bluetooth_service_hf_client_cb(esp_hf_client_cb_event_t event, esp_hf_clien
             break;
     }
 }
+

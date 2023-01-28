@@ -18,16 +18,6 @@
 
 static const char *PIPELINE_TAG = __FILENAME__;
 
-AudioPipeline* AudioPipeline::instance = nullptr;
-
-//Singleton get instance
-AudioPipeline* AudioPipeline::get_instance() {
-    if (instance == nullptr){
-        instance = new AudioPipeline();
-    }
-    return instance;
-};
-
 AudioPipeline::AudioPipeline() {
     ESP_LOGD(__FILENAME__, "Opus -> Creating Audio Pipeline");
     audio_pipeline_cfg_t pipeline_cfg = DEFAULT_AUDIO_PIPELINE_CONFIG(); // ESP-ADF Macro | Default pipeline config
@@ -37,7 +27,6 @@ AudioPipeline::AudioPipeline() {
         this->pipeline_state = AP_STATE_STOPPED;
     } else {
         ESP_LOGE(PIPELINE_TAG, "Opus -> Failed to create Audio Pipeline");
-        throw std::runtime_error("Failed to create Audio Pipeline");
     }
 
     ESP_LOGD(PIPELINE_TAG, "Opus -> Creating Event Interface Listener");
@@ -47,7 +36,6 @@ AudioPipeline::AudioPipeline() {
         ESP_LOGD(PIPELINE_TAG, "Opus -> Event Interface Listener created");
     } else {
         ESP_LOGE(PIPELINE_TAG, "Opus -> Failed to create Event Interface Listener");
-        throw std::runtime_error("Failed to create Event Interface Listener");
     }
 
     esp_err_t err;
@@ -56,7 +44,6 @@ AudioPipeline::AudioPipeline() {
         ESP_LOGD(PIPELINE_TAG, "Opus -> Event Listener linked to Pipeline");
     } else {
         ESP_LOGE(PIPELINE_TAG, "Opus -> Failed to link Event Listener to Pipeline");
-        throw std::runtime_error("Failed to link Event Listener to Pipeline");
     }
 
     /*Device *Board = Device::get_instance(BOARD_TYPE::LYRAT_V4_3);
