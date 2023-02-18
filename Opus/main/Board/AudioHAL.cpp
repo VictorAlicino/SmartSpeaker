@@ -13,9 +13,12 @@ AudioHAL* AudioHAL::instance = nullptr;
 AudioHAL* AudioHAL::get_instance() {
     if (instance == nullptr) {
         instance = new AudioHAL();
-        this->board_handle = nullptr;
     }
     return instance;
+}
+
+AudioHAL::AudioHAL() {
+    this->board_handle = nullptr;
 }
 
 esp_err_t AudioHAL::init() {

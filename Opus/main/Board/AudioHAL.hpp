@@ -5,7 +5,7 @@
 #ifndef SMARTSPEAKER_AUDIOHAL_HPP
 #define SMARTSPEAKER_AUDIOHAL_HPP
 
-#include "audio_element.h"
+#include "board.h"
 
 
 class AudioHAL {

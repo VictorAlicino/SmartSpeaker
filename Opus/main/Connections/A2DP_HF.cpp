@@ -35,13 +35,7 @@ A2DP_HF* A2DP_HF::get_instance() {
     return instance;
 }
 
-A2DP_HF::A2DP_HF() {
-    this->bt_cfg = {
-            .device_name = "",
-            .remote_name = "",
-            .mode = BLUETOOTH_A2DP_SINK,
-    };
-}
+A2DP_HF::A2DP_HF() {}
 
 void A2DP_HF::config(std::string device_name, bluetooth_service_mode_t mode) {
     bluetooth_service_cfg_t bt_cfg = {

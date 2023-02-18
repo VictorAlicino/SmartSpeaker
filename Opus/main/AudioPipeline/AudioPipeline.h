@@ -35,7 +35,7 @@ private:
     audio_event_iface_handle_t evt;
 
 public:
-    AudioPipeline();
+    AudioPipeline(audio_pipeline_cfg_t pipeline_cfg);
 
     /**
      * @brief Register an element to the pipeline

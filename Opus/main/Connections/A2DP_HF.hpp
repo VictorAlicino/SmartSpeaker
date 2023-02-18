@@ -14,6 +14,7 @@
 #include "esp_gap_bt_api.h"
 #include "esp_hf_client_api.h"
 #include "raw_stream.h"
+#include "AudioPipeline/AudioPipeline.hpp"
 #include <string>
 
 
@@ -50,5 +51,6 @@ void bluetooth_service_hf_client_cb(
         esp_hf_client_cb_event_t event,
         esp_hf_client_cb_param_t *param);
 
+void pipeline_cfg_to_a2dp_reader(AudioPipeline *pipeline);
 
 #endif //SMARTSPEAKER_A2DP_HF_HPP
