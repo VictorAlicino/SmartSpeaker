@@ -2,7 +2,7 @@
 // Created by Victor Alicino on 19/10/22.
 //
 
-#include "AudioPipeline.h"
+#include "AudioPipeline.hpp"
 
 #include "esp_log.h"
 #include "audio_mem.h"
@@ -28,4 +28,26 @@ AudioPipeline::AudioPipeline(audio_pipeline_cfg_t pipeline_cfg) {
         ESP_LOGE(PIPELINE_TAG, "Opus -> Failed to create Audio Pipeline");
     }
     ESP_LOGD(__FILENAME__, "Opus -> Pipeline successfully  created");
+}
+
+void AudioPipeline::register_element(audio_element_handle_t element, const char* name) {
+    ESP_LOGD(__FILENAME__, "Opus -> Registering element to pipeline");
+    audio_pipeline_register(this->pipeline, element, name);
+    ESP_LOGD(__FILENAME__, "Opus -> Element %s registered to pipeline", name);
+}
+
+void AudioPipeline::link_elements(const char* elements_order, int num_elements) {
+    ESP_LOGD(__FILENAME__, "Opus -> Linking elements to pipeline");
+    audio_pipeline_link(this->pipeline, elements_order, num_elements);
+    if(num_elements > 0){
+        ESP_LOGD(__FILENAME__, "%s -> ", elements_order[0]);
+        for(int i=1; i<=num_elements; i++){
+            if (i == num_elements){
+                ESP_LOGD(__FILENAME__, "%s", elements_order[i]);
+            } else {
+                ESP_LOGD(__FILENAME__, "%s -> ", elements_order[i]);
+            }
+        }
+    }
+    ESP_LOGD(__FILENAME__, "Opus -> Elements linked to pipeline");
 }

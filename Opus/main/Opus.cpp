@@ -56,10 +56,15 @@ void app_main(void){
     A2DP_HF* bt_a2dp_hf = A2DP_HF::get_instance();
     bt_a2dp_hf->config("Opus", BLUETOOTH_A2DP_SINK);
     bt_a2dp_hf->init();
-
-    //TODO: AudioPipeline
+/*
+    //TODO: AudioPipeline (Fix this thing)
     // Creating Pipelines for each audio stream
-    AudioPipeline* pipeline_d = new AudioPipeline(DEFAULT_AUDIO_PIPELINE_CONFIG());
-    AudioPipeline* pipeline_e = new AudioPipeline(DEFAULT_AUDIO_PIPELINE_CONFIG());
+    AudioPipeline* pipeline_d = new AudioPipeline(
+            DEFAULT_AUDIO_PIPELINE_CONFIG());
+    AudioPipeline* pipeline_e = new AudioPipeline(
+            DEFAULT_AUDIO_PIPELINE_CONFIG());
 
+    pipeline_cfg_to_a2dp_reader(pipeline_d);
+    pipeline_cfg_to_a2dp_writer(pipeline_e);
+    */
 }

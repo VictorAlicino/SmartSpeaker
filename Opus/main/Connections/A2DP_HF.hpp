@@ -5,17 +5,33 @@
 #ifndef SMARTSPEAKER_A2DP_HF_HPP
 #define SMARTSPEAKER_A2DP_HF_HPP
 
+#include "nvs_flash.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/event_groups.h"
 
-#include "bluetooth_service.h"
+#include "esp_log.h"
+#include "esp_peripherals.h"
+#include "periph_touch.h"
+#include "periph_adc_button.h"
+#include "periph_button.h"
 #include "esp_bt_defs.h"
 #include "esp_gap_bt_api.h"
 #include "esp_hf_client_api.h"
+
+#include "audio_element.h"
+#include "audio_pipeline.h"
+#include "audio_event_iface.h"
+#include "audio_mem.h"
+
+#include "i2s_stream.h"
+#include "board.h"
+#include "bluetooth_service.h"
+#include "filter_resample.h"
 #include "raw_stream.h"
+
 #include "AudioPipeline/AudioPipeline.hpp"
 #include <string>
+#include <cstring>
 
 
 class A2DP_HF {
@@ -51,6 +67,8 @@ void bluetooth_service_hf_client_cb(
         esp_hf_client_cb_event_t event,
         esp_hf_client_cb_param_t *param);
 
-void pipeline_cfg_to_a2dp_reader(AudioPipeline *pipeline);
+//void pipeline_cfg_to_a2dp_reader(AudioPipeline *pipeline);
+
+//void pipeline_cfg_to_a2dp_writer(AudioPipeline *pipeline);
 
 #endif //SMARTSPEAKER_A2DP_HF_HPP
