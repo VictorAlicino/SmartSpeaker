@@ -5,28 +5,20 @@
 #include "A2DP_HF.hpp"
 
 #include "nvs_flash.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 
 #include "esp_log.h"
 #include "esp_peripherals.h"
-#include "periph_touch.h"
-#include "periph_adc_button.h"
-#include "periph_button.h"
 #include "esp_bt_defs.h"
 #include "esp_gap_bt_api.h"
 #include "esp_hf_client_api.h"
 
 #include "audio_element.h"
-#include "audio_pipeline.h"
-#include "audio_event_iface.h"
 #include "audio_mem.h"
 
-#include "i2s_stream.h"
-#include "board.h"
 #include "bluetooth_service.h"
-#include "filter_resample.h"
 #include "raw_stream.h"
+
+#include "connections_macros.h"
 
 #include <string>
 #include <cstring>
@@ -279,33 +271,3 @@ void bluetooth_service_hf_client_cb(esp_hf_client_cb_event_t event, esp_hf_clien
             break;
     }
 }
-/*
-void pipeline_cfg_to_a2dp_reader(AudioPipeline *pipeline){
-    i2s_stream_cfg_t i2s_cfg1 = I2S_STREAM_CFG_DEFAULT();
-    i2s_cfg1.type = AUDIO_STREAM_WRITER;
-    i2s_stream_writer = i2s_stream_init(&i2s_cfg1);
-
-    bt_stream_reader = bluetooth_service_create_stream();
-
-    pipeline->register_element(bt_stream_reader, "bt");
-    pipeline->register_element(i2s_streamer_writer, "i2s_w");
-
-    const char *link_d[2] = {"bt", "i2s_w"};
-    pipeline->link_elements(&link_d[0], 2);
-}
-
-void pipeline_cfg_to_a2dp_writer(AudioPipeline *pipeline){i2s_stream_cfg_t i2s_cfg2 = I2S_STREAM_CFG_DEFAULT();
-    i2s_cfg2.type = AUDIO_STREAM_READER;
-    i2s_stream_reader = i2s_stream_init(&i2s_cfg2);
-
-    raw_stream_cfg_t raw_cfg = RAW_STREAM_CFG_DEFAULT();
-    raw_cfg.type = AUDIO_STREAM_READER;
-    raw_read = raw_stream_init(&raw_cfg);
-
-    pipeline->register_element(i2s_stream_reader, "i2s_r");
-    pipeline->register_element(raw_read, "raw");
-
-    const char *link_e[2] = {"i2s_r", "raw"};
-    pipeline->link_elements(&link_e[0], 2);
-}
-*/

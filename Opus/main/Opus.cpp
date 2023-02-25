@@ -56,15 +56,46 @@ void app_main(void){
     A2DP_HF* bt_a2dp_hf = A2DP_HF::get_instance();
     bt_a2dp_hf->config("Opus", BLUETOOTH_A2DP_SINK);
     bt_a2dp_hf->init();
-/*
-    //TODO: AudioPipeline (Fix this thing)
+
     // Creating Pipelines for each audio stream
+
+    // Pipeline 1 (d): Bluetooth -> I2S
+    // Configuring Audio Elements
+    i2s_stream_cfg_t i2s_cfg1 = I2S_STREAM_CFG_DEFAULT();
+    i2s_cfg1.type = AUDIO_STREAM_WRITER;
+
+    audio_element_handle_t bt_stream_reader = bluetooth_service_create_stream();
+    audio_element_handle_t i2s_stream_writer = i2s_stream_init(&i2s_cfg1);
+
+    // Creating Pipeline_1 (d)
     AudioPipeline* pipeline_d = new AudioPipeline(
             DEFAULT_AUDIO_PIPELINE_CONFIG());
+
+    // Configuring Pipeline_1 (d)
+    pipeline_d->register_element(bt_stream_reader, "bt");
+    pipeline_d->register_element(i2s_stream_writer, "i2s");
+    const char* link_d[2] = {"bt", "i2s_w"};
+    pipeline_d->link_elements(link_d, 2);
+    // End of Pipeline_1 (d)
+
+    // Pipeline 2 (e): I2S -> Bluetooth
+    // Configuring Audio Elements
+    i2s_stream_cfg_t i2s_cfg2 = I2S_STREAM_CFG_DEFAULT();
+    i2s_cfg2.type = AUDIO_STREAM_READER;
+    raw_stream_cfg_t raw_cfg = RAW_STREAM_CFG_DEFAULT();
+    raw_cfg.type = AUDIO_STREAM_READER;
+
+    audio_element_handle_t i2s_stream_reader = i2s_stream_init(&i2s_cfg2);
+    audio_element_handle_t raw_read = raw_stream_init(&raw_cfg);
+
+    // Creating Pipeline_2 (e)
     AudioPipeline* pipeline_e = new AudioPipeline(
             DEFAULT_AUDIO_PIPELINE_CONFIG());
 
-    pipeline_cfg_to_a2dp_reader(pipeline_d);
-    pipeline_cfg_to_a2dp_writer(pipeline_e);
-    */
+    // Configuring Pipelines
+    pipeline_e->register_element(i2s_stream_reader, "i2s_r");
+    pipeline_d->register_element(raw_read, "raw");
+    const char* link_e[2] = {"i2s_r", "raw"};
+    pipeline_e->link_elements(link_e, 2);
+    // End of Pipeline_2 (e)
 }

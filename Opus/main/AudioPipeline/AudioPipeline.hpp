@@ -41,9 +41,13 @@ public:
      * @brief Register an element to the pipeline
      * @param element Element to register
      */
-    void register_element(audio_element_handle_t element, const char* name);
+    void register_element(
+            audio_element_handle_t element,
+            const char* name);
 
-    void link_elements(const char* elements_order, int num_elements);
+    esp_err_t link_elements(
+            const char** elements_order,
+            int num_elements);
 
     void run();
     void pause();
