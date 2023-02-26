@@ -78,6 +78,22 @@ esp_periph_set_handle_t Device::get_peripheral_handle() {
     return this->peripherals_handle;
 }
 
+esp_err_t Device::touch_init() {
+    ESP_LOGI(DEVICE_TAG, "Initializing keys");
+    esp_err_t err = ESP_OK;
+    err = audio_board_key_init(this->peripherals_handle);
+    ESP_LOGD(DEVICE_TAG, "Keys initialized");
+    return err;
+}
+
+esp_err_t Device::start_peripheral(esp_periph_handle_t periph){
+    ESP_LOGI(DEVICE_TAG, "Starting peripheral");
+    esp_err_t err = ESP_OK;
+    err = esp_periph_start(this->peripherals_handle, periph);
+    ESP_LOGD(DEVICE_TAG, "Peripheral started");
+    return err;
+}
+
 bool Device::is_board_button_event(audio_event_iface_msg_t &msg){
     if ((msg.source_type == PERIPH_ID_TOUCH
         || msg.source_type == PERIPH_ID_BUTTON

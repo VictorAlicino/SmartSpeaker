@@ -98,6 +98,11 @@ public:
      */
     esp_periph_set_handle_t get_peripheral_handle();
 
+    //TODO doc this function
+    esp_err_t touch_init();
+
+    esp_err_t start_peripheral(esp_periph_handle_t periph);
+
     /**
      * Checks if event from iface is a button press
      * @param msg Event message

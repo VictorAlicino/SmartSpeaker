@@ -42,7 +42,6 @@ void app_main(void){
     audio_hal->init();
     ESP_LOGD(__FILENAME__, "Hardware Audio Layer (HAL) starterd");
 
-
     // Initialize WiFi
     ADFWiFi* WiFi = ADFWiFi::get_instance();
     // TODO: WiFi Credentials must be personalized in some way
@@ -98,4 +97,15 @@ void app_main(void){
     const char* link_e[2] = {"i2s_r", "raw"};
     pipeline_e->link_elements(link_e, 2);
     // End of Pipeline_2 (e)
+
+    // Initializing Peripherals
+    esp_periph_config_t periph_cfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
+    Board->peripherals_init(&periph_cfg);
+
+    // Initializing Touch Peripherals
+    Board->touch_init();
+
+    // Creating Bluetooth Peripheral
+    esp_periph_handle_t bt_periph = bluetooth_service_create_periph();
+    Board->start_peripheral(bt_periph);
 }
