@@ -14,6 +14,7 @@
 #include "Connections/A2DP_HF.hpp"
 #include "Connections/ADFWiFi.hpp"
 #include "AudioPipeline/AudioPipeline.hpp"
+#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 
 
 // Global Variables
@@ -25,6 +26,7 @@ extern "C" {
 }
 
 void app_main(void){
+    esp_log_level_set("*", ESP_LOG_VERBOSE);
     ESP_LOGI(MAIN_TAG, "Starting Opus");
 
     // ESP32 Initialization process
@@ -33,28 +35,30 @@ void app_main(void){
         ESP_LOGE(MAIN_TAG, "Halting Opus");
         return;
     }
-    ESP_LOGD(__FILENAME__, "ESP32 Initialized, No erros found");
+    ESP_LOGD(MAIN_TAG, "ESP32 Initialized, No erros found");
 
     // Initialize Board
     Device* Board = Device::get_instance(BOARD_TYPE::LYRAT_V4_3);
-    ESP_LOGI(__FILENAME__, "Starting Opus firmware to %s", Board->get_name().c_str());
+    ESP_LOGI(MAIN_TAG, "Starting Opus firmware to %s", Board->get_name().c_str());
     BoardAudio* board_audio = BoardAudio::get_instance();
-    board_audio->init();
-    ESP_LOGD(__FILENAME__, "Hardware Audio Layer (HAL) starterd");
+    board_audio->audio_hal_init();
+    ESP_LOGD(MAIN_TAG, "Hardware Audio Layer (HAL) started");
 
     // Initialize WiFi
     ADFWiFi* WiFi = ADFWiFi::get_instance();
     // TODO: WiFi Credentials must be personalized in some way
-    std::string ssid, password;
-    ssid = "whatever";
-    password = "whatever";
+    std::string ssid = "50 centavos a hora";
+    std::string password = "duzentoseoito";
     WiFi->connect_to_wifi(ssid, password);
-    ESP_LOGD(__FILENAME__, "Connecting to WiFi, SSDI: %s", ssid.c_str());
+    ESP_LOGD(MAIN_TAG, "Connecting to WiFi, SSID: %s", ssid.c_str());
 
     // Initialize Bluetooth
+    ESP_LOGD(MAIN_TAG, "Initializing Bluetooth");
+    std::string bt_name = "Opus";
     A2DP_HF* bt_a2dp_hf = A2DP_HF::get_instance();
-    bt_a2dp_hf->config("Opus", BLUETOOTH_A2DP_SINK);
+    bt_a2dp_hf->config(bt_name, BLUETOOTH_A2DP_SINK);
     bt_a2dp_hf->init();
+    ESP_LOGD(MAIN_TAG, "Bluetooth Started, Name: %s", bt_name.c_str());
 
     // Creating Pipelines for each audio stream
 
@@ -68,11 +72,12 @@ void app_main(void){
 
     // Creating Pipeline_1 (d)
     AudioPipeline* pipeline_d = new AudioPipeline(
-            DEFAULT_AUDIO_PIPELINE_CONFIG());
+            DEFAULT_AUDIO_PIPELINE_CONFIG(),
+            "Pipeline_D");
 
     // Configuring Pipeline_1 (d)
     pipeline_d->register_element(bt_stream_reader, "bt");
-    pipeline_d->register_element(i2s_stream_writer, "i2s");
+    pipeline_d->register_element(i2s_stream_writer, "i2s_w");
     const char* link_d[2] = {"bt", "i2s_w"};
     pipeline_d->link_elements(link_d, 2);
     // End of Pipeline_1 (d)
@@ -89,7 +94,8 @@ void app_main(void){
 
     // Creating Pipeline_2 (e)
     AudioPipeline* pipeline_e = new AudioPipeline(
-            DEFAULT_AUDIO_PIPELINE_CONFIG());
+            DEFAULT_AUDIO_PIPELINE_CONFIG(),
+            "Pipeline_E");
 
     // Configuring Pipelines
     pipeline_e->register_element(i2s_stream_reader, "i2s_r");
@@ -109,5 +115,18 @@ void app_main(void){
     esp_periph_handle_t bt_periph = bluetooth_service_create_periph();
     Board->start_peripheral(bt_periph);
 
+    // Set up Event Listener
+    audio_event_iface_cfg_t evt_cfg = AUDIO_EVENT_IFACE_DEFAULT_CFG();
+    board_audio->audio_event_interface_init(&evt_cfg, pipeline_d);
 
+    // Start Pipelines
+    pipeline_d->run();
+    pipeline_e->run();
+
+    // A2DP Loop
+    bt_a2dp_hf->start(
+            board_audio,
+            bt_stream_reader,
+            i2s_stream_writer,
+            bt_periph);
 }

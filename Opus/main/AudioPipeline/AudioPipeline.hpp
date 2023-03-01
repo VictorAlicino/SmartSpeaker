@@ -30,12 +30,13 @@ private:
     //Pipeline
     audio_pipeline_state_t pipeline_state;
     audio_pipeline_handle_t pipeline;
+    const char* name;
 
     //Event Interface API
     audio_event_iface_handle_t evt;
 
 public:
-    AudioPipeline(audio_pipeline_cfg_t pipeline_cfg);
+    AudioPipeline(audio_pipeline_cfg_t pipeline_cfg, const char* name);
 
     /**
      * @brief Register an element to the pipeline
@@ -48,6 +49,8 @@ public:
     esp_err_t link_elements(
             const char** elements_order,
             int num_elements);
+
+    audio_pipeline_handle_t get_pipeline();
 
     void run();
     void pause();

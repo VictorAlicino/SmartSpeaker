@@ -16,40 +16,53 @@
 
 #include "Board/Device.hpp"
 
+#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+
 static const char *PIPELINE_TAG = __FILENAME__;
 
-AudioPipeline::AudioPipeline(audio_pipeline_cfg_t pipeline_cfg) {
-    ESP_LOGD(PIPELINE_TAG, "Opus -> Creating Audio Pipeline");
+AudioPipeline::AudioPipeline(audio_pipeline_cfg_t pipeline_cfg, const char* name) {
+    ESP_LOGD(PIPELINE_TAG, "Creating Audio Pipeline");
+    this->name = name;
     this->pipeline = audio_pipeline_init(&pipeline_cfg);
     if(this->pipeline != (void*) 0){
-        ESP_LOGD(PIPELINE_TAG, "Opus -> Audio Pipeline created");
         this->pipeline_state = AP_STATE_STOPPED;
     } else {
-        ESP_LOGE(PIPELINE_TAG, "Opus -> Failed to create Audio Pipeline");
+        ESP_LOGE(this->name, "Failed to create Audio Pipeline");
     }
-    ESP_LOGD(PIPELINE_TAG, "Opus -> Pipeline successfully  created");
+    ESP_LOGD(this->name, "Pipeline successfully created");
+}
+
+audio_pipeline_handle_t AudioPipeline::get_pipeline() {
+    return this->pipeline;
 }
 
 void AudioPipeline::register_element(audio_element_handle_t element, const char* name) {
-    ESP_LOGD(PIPELINE_TAG, "Opus -> Registering element to pipeline");
-    audio_pipeline_register(this->pipeline, element, name);
-    ESP_LOGD(PIPELINE_TAG, "Opus -> Element %s registered to pipeline", name);
+    esp_err_t err = audio_pipeline_register(this->pipeline, element, name);
+    if (err == ESP_OK) ESP_LOGD(this->name, "Element ==> %s <== registered to pipeline", name);
+    else ESP_LOGE(this->name, "Failed to register element ==> %s <== to pipeline", name);
 }
 
 esp_err_t AudioPipeline::link_elements(const char** elements_order, int num_elements) {
-    ESP_LOGD(PIPELINE_TAG, "Opus -> Linking elements to pipeline");
+    ESP_LOGD(this->name, "Linking elements to pipeline");
     esp_err_t err = ESP_OK;
     err = audio_pipeline_link(this->pipeline, elements_order, num_elements);
     if(num_elements > 0){
-        ESP_LOGD(PIPELINE_TAG, "%s -> ", elements_order[0]);
-        for(int i=1; i<=num_elements; i++){
-            if (i == num_elements){
-                ESP_LOGD(PIPELINE_TAG, "%s", elements_order[i]);
+        printf("%s = {%s -> ", this->name, elements_order[0]);
+        for(int i=1; i<num_elements; i++){
+            if (i == (num_elements - 1)){
+                printf("%s}\n", elements_order[i]);
             } else {
-                ESP_LOGD(PIPELINE_TAG, "%s -> ", elements_order[i]);
+                printf("%s -> ", elements_order[i]);
             }
         }
     }
-    ESP_LOGD(PIPELINE_TAG, "Opus -> Elements linked to pipeline");
+    ESP_LOGD(this->name, "Elements linked to pipeline");
     return err;
+}
+
+void AudioPipeline::run() {
+    ESP_LOGD(this->name, "Opus -> Running pipeline");
+    audio_pipeline_run(this->pipeline);
+    this->pipeline_state = AP_STATE_RUNNING;
+    ESP_LOGD(this->name, "Opus -> Pipeline running");
 }

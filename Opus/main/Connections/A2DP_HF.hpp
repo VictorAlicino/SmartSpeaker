@@ -27,6 +27,7 @@
 #include "raw_stream.h"
 
 #include "AudioPipeline/AudioPipeline.hpp"
+#include "Board/BoardAudio.hpp"
 #include <string>
 #include <cstring>
 
@@ -57,6 +58,12 @@ public:
 
     audio_element_handle_t get_bt_stream_reader();
     audio_element_handle_t get_raw_read();
+
+    void start(
+            BoardAudio* board_audio,
+            audio_element_handle_t bt_stream_reader,
+            audio_element_handle_t i2s_stream_writer,
+            esp_periph_handle_t bt_periph);
 
 };
 

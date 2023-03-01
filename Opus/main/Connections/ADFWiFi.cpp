@@ -12,13 +12,15 @@
 #include "esp_check.h"
 #include <string>
 
+#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+
 static const char *TAG = __FILE__;
 
 ADFWiFi* ADFWiFi::instance = nullptr;
 
 ADFWiFi::ADFWiFi() {
-    this->ssid = nullptr;
-    this->password = nullptr;
+    this->ssid = "";
+    this->password = "";
 }
 
 ADFWiFi* ADFWiFi::get_instance() {

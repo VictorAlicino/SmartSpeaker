@@ -6,7 +6,8 @@
 #define SMARTSPEAKER_BOARDAUDIO_HPP
 
 #include "board.h"
-
+#include "Device.hpp"
+#include "AudioPipeline/AudioPipeline.hpp"
 
 class BoardAudio {
 private:
@@ -14,6 +15,8 @@ private:
     static BoardAudio* instance;
 
     audio_board_handle_t board_handle; // Audio board handle
+
+    audio_event_iface_handle_t evt_handle; // Audio event interface handle
 
     BoardAudio();
 
@@ -25,8 +28,15 @@ public:
      */
     static BoardAudio* get_instance();
 
-    esp_err_t init();
+    esp_err_t audio_hal_init();
 
+    esp_err_t audio_event_interface_init(
+            audio_event_iface_cfg_t* cfg,
+            AudioPipeline* pipeline);
+
+    audio_board_handle_t get_board_handle();
+
+    audio_event_iface_handle_t get_evt_handle();
 };
 
 

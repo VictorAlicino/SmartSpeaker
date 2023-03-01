@@ -88,9 +88,14 @@ public:
      * Initialize board peripherals
      * @param set_name Peripheral set instance name
      * @param config Peripheral configuration
-     * @return The peripheral sets instance
      */
-    esp_periph_set_handle_t peripherals_init(esp_periph_config_t* config);
+    void peripherals_init(esp_periph_config_t* config);
+
+    /**
+     * Get the peripherals set handle
+     * @return The peripheral set handle
+     */
+    esp_periph_set_handle_t get_peripherals_handle();
 
     /**
      * Get the peripherals set handle

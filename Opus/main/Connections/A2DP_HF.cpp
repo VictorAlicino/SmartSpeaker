@@ -20,10 +20,16 @@
 
 #include "connections_macros.h"
 
+#include "AudioPipeline/AudioPipeline.hpp"
+#include "Board/BoardAudio.hpp"
+#include "Board/Device.hpp"
+
 #include <string>
 #include <cstring>
 
 #define HFP_RESAMPLE_RATE 16000
+
+#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 
 static bool is_get_hfp = true;
 
@@ -89,6 +95,77 @@ audio_element_handle_t A2DP_HF::get_bt_stream_reader(){
 
 audio_element_handle_t A2DP_HF::get_raw_read(){
     return this->raw_read;
+}
+
+void A2DP_HF::start(
+        BoardAudio* board_audio,
+        audio_element_handle_t bt_stream_reader,
+        audio_element_handle_t i2s_stream_writer,
+        esp_periph_handle_t bt_periph){
+
+    audio_event_iface_handle_t evt = board_audio->get_evt_handle();
+    while (1) {
+        audio_event_iface_msg_t msg;
+        esp_err_t ret = audio_event_iface_listen(evt, &msg, portMAX_DELAY);
+        if (ret != ESP_OK) {
+            ESP_LOGE(A2DP_HF_TAG, "[ * ] Event interface error : %d", ret);
+            continue;
+        }
+
+        if (msg.source_type == AUDIO_ELEMENT_TYPE_ELEMENT && msg.source == (void *) bt_stream_reader
+            && msg.cmd == AEL_MSG_CMD_REPORT_MUSIC_INFO) {
+            audio_element_info_t music_info = {0};
+            audio_element_getinfo(
+                    bt_stream_reader,
+                    &music_info);
+
+            ESP_LOGI(A2DP_HF_TAG, "[ * ] Receive music info from Bluetooth, sample_rates=%d, bits=%d, ch=%d",
+                     music_info.sample_rates, music_info.bits, music_info.channels);
+            audio_element_setinfo(
+                    i2s_stream_writer,
+                    &music_info);
+            i2s_stream_set_clk(
+                    i2s_stream_writer,
+                    music_info.sample_rates,
+                    music_info.bits,
+                    music_info.channels);
+
+            continue;
+        }
+
+        if ((msg.source_type == PERIPH_ID_TOUCH || msg.source_type == PERIPH_ID_BUTTON || msg.source_type == PERIPH_ID_ADC_BTN)
+            && (msg.cmd == PERIPH_TOUCH_TAP || msg.cmd == PERIPH_BUTTON_PRESSED || msg.cmd == PERIPH_ADC_BUTTON_PRESSED)) {
+
+            if ((int) msg.data == get_input_play_id()) {
+                ESP_LOGI(A2DP_HF_TAG, "[ * ] [Play] touch tap event");
+                periph_bluetooth_play(bt_periph);
+            } else if ((int) msg.data == get_input_set_id()) {
+                ESP_LOGI(A2DP_HF_TAG, "[ * ] [Set] touch tap event");
+                periph_bluetooth_pause(bt_periph);
+            } else if ((int) msg.data == get_input_volup_id()) {
+                ESP_LOGI(A2DP_HF_TAG, "[ * ] [Vol+] touch tap event");
+                periph_bluetooth_next(bt_periph);
+            } else if ((int) msg.data == get_input_voldown_id()) {
+                ESP_LOGI(A2DP_HF_TAG, "[ * ] [Vol-] touch tap event");
+                periph_bluetooth_prev(bt_periph);
+            }
+        }
+
+        /* Stop when the Bluetooth is disconnected or suspended */
+        if (msg.source_type == PERIPH_ID_BLUETOOTH
+            && msg.source == (void *)bt_periph) {
+            if (msg.cmd == PERIPH_BLUETOOTH_DISCONNECTED) {
+                ESP_LOGW(A2DP_HF_TAG, "[ * ] Bluetooth disconnected");
+                break;
+            }
+        }
+        /* Stop when the last pipeline element (i2s_stream_writer in this case) receives stop event */
+        if (msg.source_type == AUDIO_ELEMENT_TYPE_ELEMENT && msg.source == (void *) i2s_stream_writer
+            && msg.cmd == AEL_MSG_CMD_REPORT_STATUS && (int) msg.data == AEL_STATUS_STATE_STOPPED) {
+            ESP_LOGW(A2DP_HF_TAG, "[ * ] Stop event received");
+            break;
+        }
+    }
 }
 
 static void bt_app_hf_client_audio_open(void)

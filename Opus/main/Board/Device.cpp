@@ -11,6 +11,8 @@
 #include "periph_adc_button.h"
 #include "periph_button.h"
 
+#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+
 #include <string>
 #include <stdexcept>
 
@@ -67,10 +69,13 @@ std::string Device::get_code() {
     return this->code;
 }
 
-esp_periph_set_handle_t Device::peripherals_init(esp_periph_config_t* config){
+void Device::peripherals_init(esp_periph_config_t* config){
     ESP_LOGI(DEVICE_TAG, "Initializing peripherals");
     this->peripherals_handle = esp_periph_set_init(config);
     ESP_LOGD(DEVICE_TAG, "Peripherals initialized");
+}
+
+esp_periph_set_handle_t Device::get_peripherals_handle() {
     return this->peripherals_handle;
 }
 
