@@ -102,7 +102,9 @@ void A2DP_HF::start(
         audio_element_handle_t bt_stream_reader,
         audio_element_handle_t i2s_stream_writer,
         esp_periph_handle_t bt_periph){
-
+    
+    // Set volume to 80 (max)
+    audio_hal_set_volume(board_audio->get_board_handle()->audio_hal, 80);
     audio_event_iface_handle_t evt = board_audio->get_evt_handle();
     while (1) {
         audio_event_iface_msg_t msg;
