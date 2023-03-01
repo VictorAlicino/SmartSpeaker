@@ -9,7 +9,7 @@
 
 // Project Includes
 #include "Board/Device.hpp"
-#include "Board/AudioHAL.hpp"
+#include "Board/BoardAudio.hpp"
 #include "utils.cpp"
 #include "Connections/A2DP_HF.hpp"
 #include "Connections/ADFWiFi.hpp"
@@ -38,8 +38,8 @@ void app_main(void){
     // Initialize Board
     Device* Board = Device::get_instance(BOARD_TYPE::LYRAT_V4_3);
     ESP_LOGI(__FILENAME__, "Starting Opus firmware to %s", Board->get_name().c_str());
-    AudioHAL* audio_hal = AudioHAL::get_instance();
-    audio_hal->init();
+    BoardAudio* board_audio = BoardAudio::get_instance();
+    board_audio->init();
     ESP_LOGD(__FILENAME__, "Hardware Audio Layer (HAL) starterd");
 
     // Initialize WiFi
@@ -108,4 +108,6 @@ void app_main(void){
     // Creating Bluetooth Peripheral
     esp_periph_handle_t bt_periph = bluetooth_service_create_periph();
     Board->start_peripheral(bt_periph);
+
+
 }

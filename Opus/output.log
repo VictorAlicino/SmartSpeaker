@@ -1,0 +1,158 @@
+I (27) boot: ESP-IDF v4.4-dirty 2nd stage bootloader
+I (27) boot: compile time 17:18:19
+I (27) boot: chip revision: 3     
+I (30) boot_comm: chip revision: 3, min. bootloader chip revision: 0
+I (38) boot.esp32: SPI Speed      : 40MHz
+I (42) boot.esp32: SPI Mode       : DIO
+I (47) boot.esp32: SPI Flash Size : 2MB
+I (51) boot: Enabling RNG early entropy source...
+I (57) boot: Partition Table:
+I (60) boot: ## Label            Usage          Type ST Offset   Length
+I (68) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (75) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (82) boot:  2 factory          factory app      00 00 00010000 0013d620
+I (90) boot: End of partition table
+I (94) boot_comm: chip revision: 3, min. application chip revision: 0
+I (101) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=30984h (199044) map
+I (182) esp_image: segment 1: paddr=000409ac vaddr=3ffbdb60 size=048ech ( 18668) load
+I (189) esp_image: segment 2: paddr=000452a0 vaddr=40080000 size=0ad78h ( 44408) load
+I (208) esp_image: segment 3: paddr=00050020 vaddr=400d0020 size=beb24h (781092) map
+I (491) esp_image: segment 4: paddr=0010eb4c vaddr=4008ad78 size=0e498h ( 58520) load
+I (515) esp_image: segment 5: paddr=0011cfec vaddr=50000000 size=00010h (    16) load
+I (528) boot: Loaded app from partition at offset 0x10000
+I (528) boot: Disabling RNG early entropy source...
+I (539) cpu_start: Pro cpu up.
+I (540) cpu_start: Starting app cpu, entry point is 0x400813ec
+0x400813ec: pthread_mutex_lock_internal at C:/Espressif/frameworks/esp-idf-v4.4-2/components/pthread/pthread.c:626
+
+I (0) cpu_start: App cpu up.
+I (556) cpu_start: Pro cpu start user code
+I (556) cpu_start: cpu freq: 160000000
+I (556) cpu_start: Application information:
+I (560) cpu_start: Project name:     a2dp_sink_and_hfp_example
+I (567) cpu_start: App version:      1
+I (571) cpu_start: Compile time:     Dec  7 2022 17:18:10
+I (577) cpu_start: ELF file SHA256:  caa5250f2a06072b...
+I (583) cpu_start: ESP-IDF:          v4.4-dirty
+I (589) heap_init: Initializing. RAM available for dynamic allocation:
+I (596) heap_init: At 3FFAFF10 len 000000F0 (0 KiB): DRAM
+I (602) heap_init: At 3FFB7468 len 00000B98 (2 KiB): DRAM
+I (608) heap_init: At 3FFB9A20 len 00004108 (16 KiB): DRAM
+I (614) heap_init: At 3FFCE9D0 len 00011630 (69 KiB): DRAM
+I (620) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM
+I (627) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM
+I (633) heap_init: At 40099210 len 00006DF0 (27 KiB): IRAM
+I (641) spi_flash: detected chip: generic
+I (644) spi_flash: flash io: dio
+W (648) spi_flash: Detected size(8192k) larger than the size in the binary image header(2048k). Using the size in the binary image header.
+I (662) cpu_start: Starting scheduler on PRO CPU.
+I (0) cpu_start: Starting scheduler on APP CPU.
+I (752) BLUETOOTH_EXAMPLE: [ 1 ] Create Bluetooth service
+I (752) BTDM_INIT: BT controller compile version [6a07b06]
+I (752) system_api: Base MAC address is not set
+I (762) system_api: read default base MAC address from EFUSE
+I (772) phy_init: phy_version 4670,719f9f6,Feb 18 2021,17:07:07
+W (1482) BT_BTC: A2DP Enable with AVRC
+I (1512) BLUETOOTH_EXAMPLE: [ 2 ] Start codec chip
+I (1512) gpio: GPIO[19]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:3 
+I (1532) gpio: GPIO[21]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (1532) ES8388_DRIVER: init,out:02, in:00
+I (1542) AUDIO_HAL: Codec mode is 2, Ctrl:1
+I (1552) BLUETOOTH_EXAMPLE: [ 3 ] Create audio pipeline for playback
+I (1552) BLUETOOTH_EXAMPLE: [3.1] Create i2s stream to write data to codec chip and read data from codec chip
+I (1562) I2S: APLL expected frequency is 22579200 Hz, real frequency is 22579193 Hz
+I (1572) I2S: DMA Malloc info, datalen=blocksize=1200, dma_buf_count=3
+I (1572) I2S: DMA Malloc info, datalen=blocksize=1200, dma_buf_count=3
+I (1582) LYRAT_V4_3: I2S0, MCLK output by GPIO0
+E (1592) I2S: register I2S object to platform failed
+I (1592) LYRAT_V4_3: I2S0, MCLK output by GPIO0
+I (1602) BLUETOOTH_EXAMPLE: [3.2] Create Bluetooth stream
+I (1602) BLUETOOTH_EXAMPLE: [3.3] Register all elements to audio pipeline
+I (1612) BLUETOOTH_EXAMPLE: [3.4] Link it together [Bluetooth]-->bt_stream_reader-->i2s_stream_writer-->[codec_chip]
+I (1622) AUDIO_PIPELINE: link el->rb, el:0x3ffddf6c, tag:bt, rb:0x3ffde310
+I (1632) AUDIO_PIPELINE: link el->rb, el:0x3ffdd8dc, tag:i2s_r, rb:0x3ffde454
+I (1642) BLUETOOTH_EXAMPLE: [ 4 ] Initialize peripherals
+E (1642) gpio: gpio_install_isr_service(449): GPIO isr service already installed
+I (1652) BLUETOOTH_EXAMPLE: [4.1] Initialize Touch peripheral
+I (1662) gpio: GPIO[36]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:3 
+I (1672) gpio: GPIO[39]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:3 
+I (1682) BLUETOOTH_EXAMPLE: [4.2] Create Bluetooth peripheral
+I (1682) BLUETOOTH_EXAMPLE: [4.2] Start all peripherals
+W (1702) PERIPH_TOUCH: _touch_init
+I (1702) BLUETOOTH_EXAMPLE: [ 5 ] Set up  event listener
+I (1702) BLUETOOTH_EXAMPLE: [5.1] Listening event from all elements of pipeline
+I (1712) BLUETOOTH_EXAMPLE: [5.2] Listening event from peripherals
+I (1722) BLUETOOTH_EXAMPLE: [ 6 ] Start audio_pipeline
+I (1742) AUDIO_ELEMENT: [bt-0x3ffddf6c] Element task created
+I (1742) AUDIO_ELEMENT: [i2s_w-0x3ffdd524] Element task created
+I (1742) AUDIO_PIPELINE: Func:audio_pipeline_run, Line:359, MEM Total:105092 Bytes
+
+I (1752) AUDIO_ELEMENT: [i2s_w] AEL_MSG_CMD_RESUME,state:1
+I (1752) I2S_STREAM: AUDIO_STREAM_WRITER
+I (1762) AUDIO_PIPELINE: Pipeline started
+I (1762) AUDIO_ELEMENT: [i2s_r-0x3ffdd8dc] Element task created
+I (1772) AUDIO_ELEMENT: [raw-0x3ffddc2c] Element task created
+I (1772) AUDIO_PIPELINE: Func:audio_pipeline_run, Line:359, MEM Total:99116 Bytes
+
+I (1782) AUDIO_ELEMENT: [i2s_r] AEL_MSG_CMD_RESUME,state:1
+I (1792) AUDIO_PIPELINE: Pipeline started
+I (1802) BLUETOOTH_EXAMPLE: [ 7 ] Listen for all pipeline events
+W (25692) BT_APPL: new conn_srvc id:27, app_id:1
+E (25702) BT_HF: APP HFP event: CONNECTION_STATE_EVT
+E (25702) BT_HF: --connection state connected, peer feats 0x0, chld_feats 0x0
+E (25842) BT_HF: APP HFP event: CALL_IND_EVT
+E (25842) BT_HF: --Call indicator NO call in progress
+E (25852) BT_HF: APP HFP event: CALL_SETUP_IND_EVT
+E (25852) BT_HF: --Call setup indicator NONE
+E (25852) BT_HF: APP HFP event: NETWORK_STATE_EVT
+E (25862) BT_HF: --NETWORK STATE available
+E (25872) BT_HF: APP HFP event: SIGNAL_STRENGTH_IND_EVT
+E (25922) BT_HF: -- signal strength: 2
+E (25922) BT_HF: APP HFP event: ROAMING_STATUS_IND_EVT
+E (25932) BT_HF: --ROAMING: inactive
+E (25932) BT_HF: APP HFP event: BATTERY_LEVEL_IND_EVT
+E (25942) BT_HF: --battery level 2
+E (25942) BT_HF: APP HFP event: CALL_HELD_IND_EVT
+E (25952) BT_HF: --Call held indicator NONE held
+E (25952) BT_HF: APP HFP event: CONNECTION_STATE_EVT
+E (25962) BT_HF: --connection state slc_connected, peer feats 0xfef, chld_feats 0x3f
+E (25972) BT_HF: APP HFP event: INBAND_RING_TONE_EVT
+E (25972) BT_HF: --inband ring state Provided
+E (26172) BT_APPL: bta_av_rc_create ACP handle exist for shdl:0
+I (26302) BLUETOOTH_EXAMPLE: [ * ] Receive music info from Bluetooth, sample_rates=44100, bits=16, ch=2
+I (26332) AUDIO_ELEMENT: [i2s_w] AEL_MSG_CMD_PAUSE
+I (26332) I2S: APLL expected frequency is 22579200 Hz, real frequency is 22579193 Hz
+I (26332) AUDIO_ELEMENT: [i2s_w] AEL_MSG_CMD_RESUME,state:4
+I (26342) I2S_STREAM: AUDIO_STREAM_WRITER
+W (26382) BT_APPL: new conn_srvc id:19, app_id:0
+W (26562) BT_BTC: handle_rc_metamsg_rsp: code 10 error 0x1
+I (39692) BT_LOG: bta_av_link_role_ok hndl:x41 role:1 conn_audio:x1 bits:1 features:x824b
+
+W (39692) BT_APPL: new conn_srvc id:19, app_id:1
+W (56952) BT_RFCOMM: port_rfc_closed RFCOMM connection in server:1 state 2 closed: Closed (res: 19)
+W (56992) BT_RFCOMM: rfc_find_lcid_mcb LCID reused LCID:0x41 current:0x0
+W (56992) BT_RFCOMM: RFCOMM_DisconnectInd LCID:0x41
+E (56992) BT_HF: APP HFP event: CONNECTION_STATE_EVT
+E (56992) BT_HF: --connection state disconnected, peer feats 0x0, chld_feats 0x0
+W (57002) BLUETOOTH_EXAMPLE: [ * ] Bluetooth disconnected
+I (57012) BLUETOOTH_EXAMPLE: [ 8 ] Stop audio_pipeline
+W (57012) AUDIO_ELEMENT: IN-[i2s_w] AEL_IO_ABORT
+W (57052) AUDIO_ELEMENT: OUT-[i2s_r] AEL_IO_ABORT
+W (57062) AUDIO_ELEMENT: OUT-[i2s_r] AEL_IO_ABORT
+W (57062) AUDIO_ELEMENT: OUT-[i2s_r] AEL_IO_ABORT
+W (57062) AUDIO_ELEMENT: OUT-[i2s_r] AEL_IO_ABORT
+W (57072) AUDIO_PIPELINE: There are no listener registered
+I (57072) AUDIO_PIPELINE: audio_pipeline_unlinked
+W (57082) AUDIO_ELEMENT: [bt] Element has not create when AUDIO_ELEMENT_TERMINATE
+W (57092) AUDIO_ELEMENT: [i2s_w] Element has not create when AUDIO_ELEMENT_TERMINATE
+I (57092) I2S: DMA queue destroyed
+I (57102) I2S: DMA queue destroyed
+W (57102) AUDIO_ELEMENT: [i2s_r] Element has not create when AUDIO_ELEMENT_TERMINATE
+E (57122) I2S: i2s_driver_uninstall(1933): I2S port 0 has not installed
+W (57122) AUDIO_ELEMENT: [raw] Element has not create when AUDIO_ELEMENT_TERMINATE
+W (57142) BT_L2CAP: L2CAP - PSM: 0x0019 not found for deregistration
+W (57152) BT_L2CAP: L2CAP - PSM: 0x0017 not found for deregistration
+W (57152) BT_L2CAP: L2CAP - PSM: 0x0019 not found for deregistration
+W (57162) BT_L2CAP: L2CAP - PSM: 0x0017 not found for deregistration
+W (57172) BT_APPL: bta_dm_disable BTA_DISABLE_DELAY set to 200 ms
+E (57382) BT_APPL: BTA HF Client is already disabled, ignoring ...

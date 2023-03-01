@@ -90,7 +90,7 @@ public:
      * @param config Peripheral configuration
      * @return The peripheral sets instance
      */
-    esp_periph_set_handle_t peripherals_init(esp_periph_config_t config);
+    esp_periph_set_handle_t peripherals_init(esp_periph_config_t* config);
 
     /**
      * Get the peripherals set handle

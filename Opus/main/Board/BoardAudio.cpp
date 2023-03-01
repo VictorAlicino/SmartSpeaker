@@ -2,26 +2,26 @@
 // Created by victo on 27/01/2023.
 //
 
-#include "AudioHAL.hpp"
+#include "BoardAudio.hpp"
 
 #include "audio_hal.h"
 #include "audio_event_iface.h"
 #include "board.h"
 
-AudioHAL* AudioHAL::instance = nullptr;
+BoardAudio* BoardAudio::instance = nullptr;
 
-AudioHAL* AudioHAL::get_instance() {
+BoardAudio* BoardAudio::get_instance() {
     if (instance == nullptr) {
-        instance = new AudioHAL();
+        instance = new BoardAudio();
     }
     return instance;
 }
 
-AudioHAL::AudioHAL() {
+BoardAudio::BoardAudio() {
     this->board_handle = nullptr;
 }
 
-esp_err_t AudioHAL::init() {
+esp_err_t BoardAudio::init() {
     esp_err_t err = ESP_OK;
     this->board_handle = audio_board_init();
     err = audio_hal_ctrl_codec(this->board_handle->audio_hal,
