@@ -34,6 +34,14 @@ public:
             audio_event_iface_cfg_t* cfg,
             AudioPipeline* pipeline);
 
+    void set_volume(int volume);
+
+    void set_volume_with_fade(int desired_volume, int fade_time_ms);
+
+    void mute();
+
+    int get_volume();
+
     audio_board_handle_t get_board_handle();
 
     audio_event_iface_handle_t get_evt_handle();

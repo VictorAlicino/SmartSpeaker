@@ -59,6 +59,29 @@ esp_err_t BoardAudio::audio_event_interface_init(audio_event_iface_cfg_t* cfg, A
     return err;
 }
 
+void BoardAudio::set_volume(int volume) {
+    audio_hal_set_volume(this->board_handle->audio_hal, volume);
+}
+
+void BoardAudio::set_volume_with_fade(int desired_volume, int fade_time_ms) {
+    double VOLUME_FADE_INTERVAL_MS = 0.05;
+    int current_volume = 0; // get the current volume from the HAL
+    audio_hal_get_volume(this->board_handle->audio_hal, &current_volume);
+    int volume_diff = desired_volume - current_volume;
+    int fade_steps = fade_time_ms / VOLUME_FADE_INTERVAL_MS;
+    int volume_step = volume_diff / fade_steps;
+
+    for (int i = 0; i < fade_steps; i++) {
+        int new_volume = current_volume + volume_step;
+        audio_hal_set_volume(this->board_handle->audio_hal, new_volume);
+        current_volume = new_volume;
+        vTaskDelay(VOLUME_FADE_INTERVAL_MS / portTICK_PERIOD_MS);
+    }
+
+    // set the final desired volume after the fade
+    audio_hal_set_volume(this->board_handle->audio_hal, desired_volume);
+}
+
 audio_board_handle_t BoardAudio::get_board_handle() {
     return this->board_handle;
 }

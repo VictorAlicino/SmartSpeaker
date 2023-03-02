@@ -104,7 +104,7 @@ void A2DP_HF::start(
         esp_periph_handle_t bt_periph){
     
     // Set volume to 80 (max)
-    audio_hal_set_volume(board_audio->get_board_handle()->audio_hal, 80);
+    audio_hal_set_volume(board_audio->get_board_handle()->audio_hal, 90);
     audio_event_iface_handle_t evt = board_audio->get_evt_handle();
     while (1) {
         audio_event_iface_msg_t msg;

@@ -6,6 +6,8 @@
 #include "esp_log.h"
 #include "bluetooth_service.h"
 #include "audio_pipeline.h"
+#include "http_stream.h"
+#include "mp3_decoder.h"
 
 // Project Includes
 #include "Board/Device.hpp"
@@ -104,6 +106,31 @@ void app_main(void){
     pipeline_e->link_elements(link_e, 2);
     // End of Pipeline_2 (e)
 
+    // Pipeline 3 (f): HTTP Stream -> I2S
+    // Configuring Audio Elements
+    audio_element_handle_t http_stream_reader, i2s_stream_writer_http, mp3_decoder;
+    http_stream_cfg_t http_cfg = HTTP_STREAM_CFG_DEFAULT();
+    http_stream_reader = http_stream_init(&http_cfg);
+    i2s_stream_cfg_t i2s_cfg3 = I2S_STREAM_CFG_DEFAULT();
+    i2s_cfg3.type = AUDIO_STREAM_WRITER;
+    i2s_stream_writer_http = i2s_stream_init(&i2s_cfg3);
+    mp3_decoder_cfg_t mp3_cfg = DEFAULT_MP3_DECODER_CONFIG();
+    mp3_decoder = mp3_decoder_init(&mp3_cfg);
+
+
+    // Creating Pipeline_3 (f)
+    AudioPipeline* pipeline_f = new AudioPipeline(
+            DEFAULT_AUDIO_PIPELINE_CONFIG(),
+            "Pipeline_F");
+
+    // Configuring Pipelines
+    pipeline_f->register_element(http_stream_reader, "http");
+    pipeline_f->register_element(mp3_decoder, "mp3");
+    pipeline_f->register_element(i2s_stream_writer_http, "i2s_w");
+    const char* link_f[3] = {"http", "mp3", "i2s_w"};
+    pipeline_f->link_elements(link_f, 3);
+    // End of Pipeline_3 (f)
+
     // Initializing Peripherals
     esp_periph_config_t periph_cfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
     Board->peripherals_init(&periph_cfg);
@@ -122,6 +149,7 @@ void app_main(void){
     // Start Pipelines
     pipeline_d->run();
     pipeline_e->run();
+    //pipeline_f->run();
 
     // A2DP Loop
     bt_a2dp_hf->start(
