@@ -19,6 +19,8 @@
 #include "raw_stream.h"
 
 #include "connections_macros.h"
+#include "esp_a2dp_api.h"
+#include "esp_avrc_api.h"
 
 #include "AudioPipeline/AudioPipeline.hpp"
 #include "Board/BoardAudio.hpp"
@@ -55,7 +57,6 @@ void A2DP_HF::config(std::string device_name, bluetooth_service_mode_t mode) {
     };
     this->bt_cfg = bt_cfg;
 }
-
 
 void A2DP_HF::init(){
     bluetooth_service_start(&this->bt_cfg);
@@ -102,13 +103,32 @@ void A2DP_HF::start(
         audio_element_handle_t bt_stream_reader,
         audio_element_handle_t i2s_stream_writer,
         esp_periph_handle_t bt_periph){
-    
+
+    ESP_LOGD(A2DP_HF_TAG, "Start A2DP_HF Loop");
     // Set volume to 80 (max)
     audio_hal_set_volume(board_audio->get_board_handle()->audio_hal, 90);
     audio_event_iface_handle_t evt = board_audio->get_evt_handle();
     while (1) {
         audio_event_iface_msg_t msg;
         esp_err_t ret = audio_event_iface_listen(evt, &msg, portMAX_DELAY);
+        switch(msg.source_type){
+            case AUDIO_ELEMENT_TYPE_UNKNOW:
+                ESP_LOGD(A2DP_HF_TAG, "AUDIO_ELEMENT_TYPE_UNKNOW");
+                break;
+            case AUDIO_ELEMENT_TYPE_ELEMENT:
+                ESP_LOGD(A2DP_HF_TAG, "AUDIO_ELEMENT_TYPE_ELEMENT");
+                break;
+            case AUDIO_ELEMENT_TYPE_PLAYER:
+                ESP_LOGD(A2DP_HF_TAG, "AUDIO_ELEMENT_TYPE_DECODER");
+                break;
+            case AUDIO_ELEMENT_TYPE_SERVICE:
+                ESP_LOGD(A2DP_HF_TAG, "AUDIO_ELEMENT_TYPE_FILTER");
+                break;
+            case AUDIO_ELEMENT_TYPE_PERIPH:
+                ESP_LOGD(A2DP_HF_TAG, "AUDIO_ELEMENT_TYPE_PERIPH");
+                break;
+        }
+
         if (ret != ESP_OK) {
             ESP_LOGE(A2DP_HF_TAG, "[ * ] Event interface error : %d", ret);
             continue;

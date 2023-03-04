@@ -49,8 +49,8 @@ void app_main(void){
     // Initialize WiFi
     ADFWiFi* WiFi = ADFWiFi::get_instance();
     // TODO: WiFi Credentials must be personalized in some way
-    std::string ssid = "SmartPTI";
-    std::string password = "SmartPT12017.";
+    std::string ssid = "50 centavos a hora";
+    std::string password = "duzentoseoito";
     WiFi->connect_to_wifi(ssid, password);
     ESP_LOGD(MAIN_TAG, "Connecting to WiFi, SSID: %s", ssid.c_str());
 
@@ -105,7 +105,7 @@ void app_main(void){
     const char* link_e[2] = {"i2s_r", "raw"};
     pipeline_e->link_elements(link_e, 2);
     // End of Pipeline_2 (e)
-
+/*
     // Pipeline 3 (f): HTTP Stream -> I2S
     // Configuring Audio Elements
     audio_element_handle_t http_stream_reader, i2s_stream_writer_http, mp3_decoder;
@@ -129,8 +129,12 @@ void app_main(void){
     pipeline_f->register_element(i2s_stream_writer_http, "i2s_w");
     const char* link_f[3] = {"http", "mp3", "i2s_w"};
     pipeline_f->link_elements(link_f, 3);
-    // End of Pipeline_3 (f)
 
+    audio_element_set_uri(
+            http_stream_reader,
+            "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.mp3");
+    // End of Pipeline_3 (f)
+*/
     // Initializing Peripherals
     esp_periph_config_t periph_cfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
     Board->peripherals_init(&periph_cfg);
