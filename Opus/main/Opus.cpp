@@ -49,8 +49,8 @@ void app_main(void){
     // Initialize WiFi
     ADFWiFi* WiFi = ADFWiFi::get_instance();
     // TODO: WiFi Credentials must be personalized in some way
-    std::string ssid = "50 centavos a hora";
-    std::string password = "duzentoseoito";
+    std::string ssid = "SmartPTI";
+    std::string password = "SmartPT12017.";
     WiFi->connect_to_wifi(ssid, password);
     ESP_LOGD(MAIN_TAG, "Connecting to WiFi, SSID: %s", ssid.c_str());
 
